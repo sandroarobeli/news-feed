@@ -85,6 +85,12 @@ const Header = () => {
     setDrawerOpen(false);
   };
 
+  const handleLogout = () => {
+    //dispatch(logout())
+    console.log("Logged out!");
+    setDrawerOpen(false);
+  };
+
   return (
     <AppBar position="static" color="primary" sx={styles.appbar}>
       <Toolbar sx={styles.toolbar}>
@@ -97,12 +103,7 @@ const Header = () => {
           >
             <MenuIcon sx={styles.menuIcon} />
           </IconButton>
-          <IconButton
-            disableRipple
-            //component={RouterLink}
-            //to="/"
-            aria-label="News Feed logo"
-          >
+          <IconButton disableRipple component={RouterLink} to="/" aria-label="News Feed logo">
             <Typography component="h2" sx={styles.logo}>
               News Feed
             </Typography>
@@ -111,8 +112,8 @@ const Header = () => {
         <Stack direction="row" sx={styles.rightStack} spacing={{ tablet: 2, laptop: 4 }}>
           <Button
             disableRipple
-            // component={RouterLink}
-            // to=""
+            component={RouterLink}
+            to=""
             sx={styles.linkButton}
             aria-label="main page"
           >
@@ -120,8 +121,8 @@ const Header = () => {
           </Button>
           <Button
             disableRipple
-            // component={RouterLink}
-            // to=""
+            component={RouterLink}
+            to="myposts"
             sx={styles.linkButton}
             aria-label="my posts page"
           >
@@ -129,15 +130,16 @@ const Header = () => {
           </Button>
           <Button
             disableRipple
-            //  component={RouterLink}
-            //  to=""
+            component={RouterLink}
+            to=""
+            onClick={handleLogout}
             sx={styles.linkButton}
             aria-label="logout button"
           >
             Logout
           </Button>
         </Stack>
-        <SideDrawer open={drawerOpen} onDrawerClose={handleDrawerClose} />
+        <SideDrawer open={drawerOpen} onDrawerClose={handleDrawerClose} onLogout={handleLogout} />
       </Toolbar>
     </AppBar>
   );
