@@ -51,8 +51,8 @@ const SideDrawer = (props) => {
         <Button
           aria-label="main page"
           disableRipple
-          //component={RouterLink}
-          //to=""
+          component={RouterLink}
+          to=""
           onClick={props.onDrawerClose}
           sx={styles.linkButton}
         >
@@ -61,8 +61,8 @@ const SideDrawer = (props) => {
         <Button
           aria-label="my posts page"
           disableRipple
-          //component={RouterLink}
-          //to="services"
+          component={RouterLink}
+          to="myposts"
           onClick={props.onDrawerClose}
           sx={styles.linkButton}
         >
@@ -71,9 +71,9 @@ const SideDrawer = (props) => {
         <Button
           aria-label="logout button"
           disableRipple
-          //component={RouterLink}
-          //to="rates"
-          onClick={props.onDrawerClose}
+          component={RouterLink}
+          to=""
+          onClick={props.onLogout} //{props.onDrawerClose}
           sx={styles.linkButton}
         >
           Logout
