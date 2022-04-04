@@ -131,6 +131,24 @@ const Header = () => {
           <Button
             disableRipple
             component={RouterLink}
+            to="login"
+            sx={styles.linkButton}
+            aria-label="login page"
+          >
+            Login
+          </Button>
+          <Button
+            disableRipple
+            component={RouterLink}
+            to="signup"
+            sx={styles.linkButton}
+            aria-label="signup page"
+          >
+            Signup
+          </Button>
+          <Button
+            disableRipple
+            component={RouterLink}
             to=""
             onClick={handleLogout}
             sx={styles.linkButton}

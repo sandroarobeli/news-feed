@@ -69,6 +69,26 @@ const SideDrawer = (props) => {
           My Posts
         </Button>
         <Button
+          aria-label="login page"
+          disableRipple
+          component={RouterLink}
+          to="login"
+          onClick={props.onDrawerClose}
+          sx={styles.linkButton}
+        >
+          Login
+        </Button>
+        <Button
+          aria-label="signup page"
+          disableRipple
+          component={RouterLink}
+          to="signup"
+          onClick={props.onDrawerClose}
+          sx={styles.linkButton}
+        >
+          Signup
+        </Button>
+        <Button
           aria-label="logout button"
           disableRipple
           component={RouterLink}
