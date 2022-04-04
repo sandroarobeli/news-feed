@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -9,15 +11,19 @@ import Button from "@mui/material/Button";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import Avatar from "@mui/material/Avatar";
 
-// 3. ADD DB AND BACKEND
-// 4. TIE TO REDUX
-// 5. NOTE: ADD FILE INPUT AS PHOTO INPUT PER HATCHWAYS PROJECT
-
-// NOTE: TIE AUTH TO SERVER FIRST, THEN KNOWING !!!WHAT I NEED!!! MOVE IT TO REDUX
+// 1. START WITH TESTING ERROR HANDLING AND DISPLAY
+// 2. LOCK ROUTES AS IN LOGGED IN CAN ACCESS ONE SET, NOT LOGGED ANOTHER
+// 3. LOCK ROUTER LINKS PER SAME RULES AS ABOVE
 
 import theme from "../../../theme/theme";
 import ErrorModal from "../../shared/errorModal/ErrorModal";
 import AvatarInput from "../avatarInput/AvatarInput";
+import {
+  signup,
+  clearError,
+  selectUserStatus,
+  selectUserError,
+} from "../../../redux/user-slice.js";
 
 export const styles = {
   container: {
@@ -77,16 +83,24 @@ export const styles = {
   },
 };
 
-// Start Redux, first with auth template, then with Joke-Reel
-// Once I have all the routes setup, I'll now how to properly name them!
-
 const Signup = () => {
+  // From Router
+  const navigate = useNavigate();
+
+  // from Redux
+  const dispatch = useDispatch();
+  //const user = useSelector(selectUsername)
+  const userStatus = useSelector(selectUserStatus);
+  const userError = useSelector(selectUserError);
+
+  // Local state
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [userAvatar, setUserAvatar] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(""); // test, redux will handle errors
+  const [errorMessage, setErrorMessage] = useState("");
 
+  // Handler functions
   const handleUserNameChange = (event) => {
     setUserName(event.target.value);
   };
@@ -108,10 +122,10 @@ const Signup = () => {
 
     try {
       const signedResponse = await fetch("http://127.0.0.1:5000/api/image");
-      console.log(signedResponse); // test
+      // console.log(signedResponse); // test
       const signedData = await signedResponse.json();
-      console.log(signedData); // test
-      console.log(file); // test
+      // console.log(signedData); // test
+      // console.log(file); // test
       const url = "https://api.cloudinary.com/v1_1/" + signedData.cloudName + "/auto/upload";
 
       if (typeIsAllowed) {
@@ -131,54 +145,45 @@ const Signup = () => {
       if (!response.ok) {
         // throw new Error("Attachment failed. Please try again."); // test
         setErrorMessage(imageResponse.error.message); // RESTORE
-        //setErrorBarOpen(true); // RESTORE
       }
-      console.log(imageResponse); // test
+      //console.log(imageResponse); // test
       // const avatarUrl = imageResponse.secure_url; // Original secure URL
       const avatarUrl = imageResponse.eager[0].secure_url; // URL with stylings
       setUserAvatar(avatarUrl);
       setIsLoading(false);
-      // DON'T FORGET NAVIGATE(" TO POSTS LIST") ...
+
       // setSuccessBarOpen(true);
     } catch (error) {
-      //throw new Error(error.message); // test
-      setErrorMessage(error.message); // RESTORE
+      setErrorMessage(error.message); // Local Error state gets populated by Cloudinary error
       setIsLoading(false);
-      // setErrorBarOpen(true); // RESTORE
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (userStatus === "idle") {
+      try {
+        await dispatch(signup({ userName, password, userAvatar })).unwrap();
+        setUserName("");
+        setPassword("");
+        setUserAvatar("");
+        navigate("/");
+      } catch (error) {
+        // NOTE: SINCE ERRORS COULD BE GENERATED FROM EITHER CLOUDINARY OR REDUX,
+        // AND THERE IS ONLY ONE ERROR MODULE, REDUX ERROR GOES TO LOCAL ERROR STATE
+        // AND ONLY THEN GETS REFLECTED IN ERROR MODULE AS ITS TEXT.
 
-    try {
-      const response = await fetch("http://127.0.0.1:5000/api/user/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          //'Authorization': 'Bearer ' + token
-        },
-        mode: "cors",
-        body: JSON.stringify({
-          userName,
-          password,
-          userAvatar,
-        }),
-      });
-      const responseData = await response.json();
-      if (!response.ok) {
-        // NON-NETWORK (NON 500 STATUS CODE) RELATED ERRORS
-        throw new Error(responseData.message);
+        // For debugging only. error gets populated by createAsyncThunk abstraction
+        console.log("from SIGNUP submit"); //test
+        console.log(userError); //test
+        setErrorMessage(userError); // Local Error state get populated by Redux error
       }
-
-      console.log("Success response"); // test
-      console.log(responseData); // test
-    } catch (error) {
-      // For debugging only. error gets populated by createAsyncThunk abstraction
-      console.log("from SIGNUP submit"); //test
-      console.log(error); //test
     }
-    // FROM HERE: DB => REDUX => LOCK DOWN ROUTES...
+  };
+
+  const handleErrorClear = () => {
+    dispatch(clearError());
+    setErrorMessage("");
     setUserName("");
     setPassword("");
     setUserAvatar("");
@@ -238,14 +243,22 @@ const Signup = () => {
           userAvatar={userAvatar}
           isLoading={isLoading}
         />
-        <Button type="submit" variant="contained" sx={{ ...styles.button, width: "100%" }}>
-          SUBMIT
+        <Button
+          type="submit"
+          disabled={userStatus === "loading"}
+          variant="contained"
+          sx={{ ...styles.button, width: "100%" }}
+          endIcon={
+            userStatus === "loading" ? <CircularProgress color="secondary" size={25} /> : undefined
+          }
+        >
+          {userStatus === "loading" ? "SUBMITTING" : "SUBMIT"}
         </Button>
       </Stack>
       <ErrorModal
         open={!!errorMessage}
-        //onClose={() => setOpenErrorModal(false)}
-        //clearModal={() => setOpenErrorModal(false)}
+        onClose={handleErrorClear}
+        clearModal={handleErrorClear}
         errorMessage={errorMessage}
       />
     </Box>

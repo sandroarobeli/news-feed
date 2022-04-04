@@ -19,6 +19,7 @@ const fileUploadForm = () => {
   return { timestamp, signature };
 };
 
-module.exports = {
-  fileUploadForm,
-};
+// module.exports = {   // RESTORE IF NEEDED
+//   fileUploadForm,
+// };
+exports.fileUploadForm = fileUploadForm;

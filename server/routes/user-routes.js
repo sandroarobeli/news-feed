@@ -11,7 +11,7 @@ router.post(
   "/signup",
   [
     check("userName").not().isEmpty().trim().escape(),
-    check("password").isLength({ min: 5 }), // Adjust-restore per user requirements
+    check("password").isLength({ min: 6 }), // Adjust-restore per user requirements
     //check("userAvatar").not().isEmpty().trim().escape(), // avatar is not a must...
   ],
   userControllers.signup
