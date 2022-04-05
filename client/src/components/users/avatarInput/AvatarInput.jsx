@@ -16,7 +16,7 @@ const styles = {
     color: theme.palette.primary.main,
     height: "150px",
     width: "150px",
-    height: "auto",
+    //height: "auto",
   },
   button: {
     padding: "0.75rem",
@@ -29,7 +29,7 @@ const styles = {
       color: theme.palette.secondary.main,
       background: theme.palette.primary.light,
     },
-    "&active": {
+    "&:active": {
       color: theme.palette.secondary.main,
       background: theme.palette.primary.light,
     },
