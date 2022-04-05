@@ -1,10 +1,12 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Stack from "@mui/material/Stack";
 import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
 
 import theme from "../../../theme/theme";
+import { selectToken } from "../../../redux/user-slice.js";
 
 export const styles = {
   drawer: {
@@ -19,7 +21,6 @@ export const styles = {
     fontFamily: "Segoe UI",
     fontSize: theme.typography.h5.fontSize,
     color: theme.palette.secondary.main,
-    //height: "3rem",
     "&:hover": {
       color: theme.palette.background.paper,
       transition: "0.8s",
@@ -36,6 +37,12 @@ export const styles = {
 };
 
 const SideDrawer = (props) => {
+  // From Redux
+  const userToken = useSelector(selectToken);
+
+  // Convenience Boolean for logged in status
+  let isLoggedIn = userToken ? true : false;
+
   return (
     <Drawer
       anchor="left"
@@ -58,46 +65,54 @@ const SideDrawer = (props) => {
         >
           Main
         </Button>
-        <Button
-          aria-label="my posts page"
-          disableRipple
-          component={RouterLink}
-          to="myposts"
-          onClick={props.onDrawerClose}
-          sx={styles.linkButton}
-        >
-          My Posts
-        </Button>
-        <Button
-          aria-label="login page"
-          disableRipple
-          component={RouterLink}
-          to="login"
-          onClick={props.onDrawerClose}
-          sx={styles.linkButton}
-        >
-          Login
-        </Button>
-        <Button
-          aria-label="signup page"
-          disableRipple
-          component={RouterLink}
-          to="signup"
-          onClick={props.onDrawerClose}
-          sx={styles.linkButton}
-        >
-          Signup
-        </Button>
-        <Button
-          aria-label="logout button"
-          disableRipple
-          component={RouterLink}
-          to=""
-          onClick={props.onLogout} //{props.onDrawerClose}
-          sx={styles.linkButton}
-        >
-          Logout
-        </Button>
+        {isLoggedIn && (
+          <Button
+            aria-label="my posts page"
+            disableRipple
+            component={RouterLink}
+            to="myposts"
+            onClick={props.onDrawerClose}
+            sx={styles.linkButton}
+          >
+            My Posts
+          </Button>
+        )}
+        {!isLoggedIn && (
+          <Button
+            aria-label="login page"
+            disableRipple
+            component={RouterLink}
+            to="login"
+            onClick={props.onDrawerClose}
+            sx={styles.linkButton}
+          >
+            Login
+          </Button>
+        )}
+        {!isLoggedIn && (
+          <Button
+            aria-label="signup page"
+            disableRipple
+            component={RouterLink}
+            to="signup"
+            onClick={props.onDrawerClose}
+            sx={styles.linkButton}
+          >
+            Signup
+          </Button>
+        )}
+        {isLoggedIn && (
+          <Button
+            aria-label="logout button"
+            disableRipple
+            component={RouterLink}
+            to=""
+            onClick={props.onLogout}
+            sx={styles.linkButton}
+          >
+            Logout
+          </Button>
+        )}
       </Stack>
     </Drawer>
   );

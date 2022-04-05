@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -10,6 +11,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 import theme from "../../../theme/theme.js";
 import SideDrawer from "../sideDrawer/SideDrawer";
+import { selectToken, logout } from "../../../redux/user-slice.js";
 
 const styles = {
   appbar: {
@@ -75,8 +77,17 @@ const styles = {
 };
 
 const Header = () => {
+  // From Redux
+  const dispatch = useDispatch();
+  const userToken = useSelector(selectToken);
+
+  // Local State
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  // Convenience Boolean for logged in status
+  let isLoggedIn = userToken ? true : false;
+
+  // Handler Functions
   const handleDrawerOpen = () => {
     setDrawerOpen(true);
   };
@@ -86,8 +97,7 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    //dispatch(logout())
-    console.log("Logged out!");
+    dispatch(logout());
     setDrawerOpen(false);
   };
 
@@ -119,43 +129,51 @@ const Header = () => {
           >
             Main
           </Button>
-          <Button
-            disableRipple
-            component={RouterLink}
-            to="myposts"
-            sx={styles.linkButton}
-            aria-label="my posts page"
-          >
-            My Posts
-          </Button>
-          <Button
-            disableRipple
-            component={RouterLink}
-            to="login"
-            sx={styles.linkButton}
-            aria-label="login page"
-          >
-            Login
-          </Button>
-          <Button
-            disableRipple
-            component={RouterLink}
-            to="signup"
-            sx={styles.linkButton}
-            aria-label="signup page"
-          >
-            Signup
-          </Button>
-          <Button
-            disableRipple
-            component={RouterLink}
-            to=""
-            onClick={handleLogout}
-            sx={styles.linkButton}
-            aria-label="logout button"
-          >
-            Logout
-          </Button>
+          {isLoggedIn && (
+            <Button
+              disableRipple
+              component={RouterLink}
+              to="myposts"
+              sx={styles.linkButton}
+              aria-label="my posts page"
+            >
+              My Posts
+            </Button>
+          )}
+          {!isLoggedIn && (
+            <Button
+              disableRipple
+              component={RouterLink}
+              to="login"
+              sx={styles.linkButton}
+              aria-label="login page"
+            >
+              Login
+            </Button>
+          )}
+          {!isLoggedIn && (
+            <Button
+              disableRipple
+              component={RouterLink}
+              to="signup"
+              sx={styles.linkButton}
+              aria-label="signup page"
+            >
+              Signup
+            </Button>
+          )}
+          {isLoggedIn && (
+            <Button
+              disableRipple
+              component={RouterLink}
+              to=""
+              onClick={handleLogout}
+              sx={styles.linkButton}
+              aria-label="logout button"
+            >
+              Logout
+            </Button>
+          )}
         </Stack>
         <SideDrawer open={drawerOpen} onDrawerClose={handleDrawerClose} onLogout={handleLogout} />
       </Toolbar>

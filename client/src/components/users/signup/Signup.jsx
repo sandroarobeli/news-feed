@@ -5,25 +5,16 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import FilledInput from "@mui/material/FilledInput";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
-import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
-import Avatar from "@mui/material/Avatar";
 
-// 1. START WITH TESTING ERROR HANDLING AND DISPLAY
-// 2. LOCK ROUTES AS IN LOGGED IN CAN ACCESS ONE SET, NOT LOGGED ANOTHER
-// 3. LOCK ROUTER LINKS PER SAME RULES AS ABOVE
+// 1. CHECK OTHER ERRORS IN USER-CONTROLLERS LIKE ALREADY EXISTING USER ETC...
+// 2. ENABLE DB SAVING AND ADD LOGIN FUNCTIONALITY
 
 import theme from "../../../theme/theme";
 import ErrorModal from "../../shared/errorModal/ErrorModal";
 import AvatarInput from "../avatarInput/AvatarInput";
-import {
-  signup,
-  clearError,
-  selectUserStatus,
-  selectUserError,
-} from "../../../redux/user-slice.js";
+import { signup, clearError, selectUserStatus } from "../../../redux/user-slice.js";
 
 export const styles = {
   container: {
@@ -76,9 +67,13 @@ export const styles = {
       color: theme.palette.secondary.main,
       background: theme.palette.primary.light,
     },
-    "&active": {
+    "&:active": {
       color: theme.palette.secondary.main,
       background: theme.palette.primary.light,
+    },
+    "&:disabled": {
+      color: theme.palette.secondary.main,
+      background: theme.palette.primary.main,
     },
   },
 };
@@ -89,9 +84,8 @@ const Signup = () => {
 
   // from Redux
   const dispatch = useDispatch();
-  //const user = useSelector(selectUsername)
   const userStatus = useSelector(selectUserStatus);
-  const userError = useSelector(selectUserError);
+  // useSelector(selectUserError); // Not needed. Thunk sends errors via dispatch
 
   // Local state
   const [userName, setUserName] = useState("");
@@ -175,8 +169,8 @@ const Signup = () => {
 
         // For debugging only. error gets populated by createAsyncThunk abstraction
         console.log("from SIGNUP submit"); //test
-        console.log(userError); //test
-        setErrorMessage(userError); // Local Error state get populated by Redux error
+        console.log(error); // test
+        setErrorMessage(error); // Local Error state get populated by Redux error
       }
     }
   };
@@ -195,9 +189,7 @@ const Signup = () => {
         <Typography component="h3" sx={styles.title}>
           Sign Up
         </Typography>
-
         <TextField
-          //error
           fullWidth
           variant="filled"
           aria-label="userName"
@@ -206,7 +198,6 @@ const Signup = () => {
           label="Username"
           type="text"
           required
-          //helperText="Incorrect entry." // test
           InputProps={{
             sx: styles.inputProps,
           }}
@@ -216,9 +207,7 @@ const Signup = () => {
           value={userName}
           onChange={handleUserNameChange}
         />
-
         <TextField
-          //error={customHelpText}
           fullWidth
           variant="filled"
           aria-label="password"
@@ -227,7 +216,11 @@ const Signup = () => {
           label="Password"
           type="password"
           required
-          helperText={password ? "Password must be at least 6 characters long" : undefined}
+          helperText={
+            password && password.length < 6
+              ? "Password must be at least 6 characters long"
+              : undefined
+          }
           InputProps={{
             sx: styles.inputProps,
           }}

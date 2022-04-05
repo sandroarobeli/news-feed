@@ -70,6 +70,10 @@ const signup = async (req, res, next) => {
         userAvatar: createdUser.userAvatar,
         posts: createdUser.posts,
         token: token,
+        // Sets time to 10 Seconds for TESTING
+        expiration: new Date().getTime() + 1000 * 10,
+        // Sets time to 1 Hour for THIS application
+        // expiration: new Date().getTime() + 1000 * 60 * 60,
       },
     });
   } catch (error) {
