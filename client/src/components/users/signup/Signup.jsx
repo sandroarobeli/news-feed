@@ -21,7 +21,6 @@ export const styles = {
     textAlign: "center",
     flexGrow: 1,
     margin: "1rem auto auto auto",
-    border: "2px solid #005BBB",
     borderRadius: "5px",
     maxWidth: {
       mobile: "90%",
@@ -43,7 +42,7 @@ export const styles = {
     fontWeight: 600,
     fontSize: "1.25rem",
     borderRadius: 0,
-    borderBottom: "3px solid #005BBB",
+    borderBottom: "1px solid #005BBB",
     "&: hover": {
       background: "rgba(0, 91, 187, 0.35)",
     },
@@ -187,7 +186,7 @@ const Signup = () => {
     <Box component="form" sx={styles.container} onSubmit={handleSubmit} autoComplete="off">
       <Stack spacing={3} sx={{ alignItems: "center" }}>
         <Typography component="h3" sx={styles.title}>
-          Sign Up
+          SIGN UP
         </Typography>
         <TextField
           fullWidth

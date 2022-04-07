@@ -46,7 +46,7 @@ const signup = async (req, res, next) => {
   });
 
   try {
-    // await createdUser.save() RESTORE
+    // await createdUser.save();  // RESTORE
 
     // Create token, so we can send it back as proof of authorization.
     // We get to decide what data we encode. This time it's userId
@@ -82,61 +82,64 @@ const signup = async (req, res, next) => {
 };
 
 // Login a User
-// const login = async (req, res, next) => {
-//     const { email, password } = req.body
+const login = async (req, res, next) => {
+  const { userName, password } = req.body;
 
-//     try {
-//         // Checking if email already exists
-//         const existingUser = await User.findOne({ email })
-//         if (!existingUser) {
-//             return next(new Error('The email not found. Please enter a valid email or proceed to signup.'))
-//         }
-//         // Check if existingUser.password matches hashed version of newly entered plaintext password
-//         let isValidPassword = false
-//         try {
-//             isValidPassword = await bcrypt.compare(password, existingUser.password)
-//         } catch (error) {
-//             return next(new Error(`Login failed. Please try again later.\n${error.message}`))
-//         }
-//         // Catch block right above deals with connection etc. type errors
-//         // isValidPassword = false is a valid result and gets addressed below
-//         if (!isValidPassword) {
-//             return next(new Error('Invalid credentials entered. Please check your credentials and try again'))
-//         }
-//         // After we ensure user(its email) exists, and the passwords match,
-//         // We can generate the Token
-//         // This way, frontend will attach this token to the requests going to routes that
-//         // REQUIRE AUTHORIZATION
-//         let token
-//         try {
-//             token = jwt.sign(
-//                 { userId: existingUser._id },
-//                 process.env.SECRET_TOKEN_KEY,
-//                 { expiresIn: '1h' }
-//             )
-//         } catch (error) {
-//             return next(new Error('Login failed. Please try again'))
-//         }
-//         // Sending back whatever data we want with created token
-//         // res.status(201).json({ user: createdUser })
-//         res.status(201).json(
-//             {
-//                 user: {
-//                     userName: existingUser.userName,
-//                     email: existingUser.email,
-//                     userId: existingUser._id,
-//                     posts: existingUser.posts,
-//                     token: token
-//                 }
-//             }
-//         )
-
-//     } catch (error) {
-//         return next(new Error(`Login failed: ${error.message}`))
-//     }
-// }
+  try {
+    // Checking if email already exists
+    const existingUser = await User.findOne({ userName });
+    if (!existingUser) {
+      return next(
+        new Error("User not found. Please enter a valid User Name or proceed to signup.")
+      );
+    }
+    // Check if existingUser.password matches hashed version of newly entered plaintext password
+    let isValidPassword = false;
+    try {
+      isValidPassword = await bcrypt.compare(password, existingUser.password);
+    } catch (error) {
+      return next(new Error(`Login failed. Please try again later.\n${error.message}`));
+    }
+    // Catch block right above deals with connection etc. type errors
+    // isValidPassword = false is a valid result and gets addressed below
+    if (!isValidPassword) {
+      return next(
+        new Error("Invalid credentials entered. Please check your credentials and try again")
+      );
+    }
+    // After we ensure user(its email) exists, and the passwords match,
+    // We can generate the Token
+    // This way, frontend will attach this token to the requests going to routes that
+    // REQUIRE AUTHORIZATION
+    let token;
+    try {
+      token = jwt.sign({ userId: existingUser._id }, process.env.SECRET_TOKEN_KEY, {
+        expiresIn: "1h",
+      });
+    } catch (error) {
+      return next(new Error("Login failed. Please try again"));
+    }
+    // Sending back whatever data we want with created token
+    // res.status(201).json({ user: createdUser })
+    res.status(201).json({
+      user: {
+        userName: existingUser.userName,
+        userId: existingUser._id,
+        userAvatar: existingUser.userAvatar,
+        posts: existingUser.posts,
+        token: token,
+        // Sets time to 10 Seconds for TESTING
+        //expiration: new Date().getTime() + 1000 * 10,
+        // Sets time to 1 Hour for THIS application
+        expiration: new Date().getTime() + 1000 * 60 * 60,
+      },
+    });
+  } catch (error) {
+    return next(new Error(`Login failed: ${error.message}`));
+  }
+};
 
 // MORE TO BE ADDED...
 
 exports.signup = signup;
-//exports.login = login
+exports.login = login;

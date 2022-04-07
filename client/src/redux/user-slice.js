@@ -28,7 +28,39 @@ export const signup = createAsyncThunk(
       return responseData.user;
     } catch (error) {
       // NETWORK RELATED ERRORS
-      console.log("from thunk catch"); //test
+      console.log("from signup thunk catch"); //test
+      console.log(error.message); //test
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const login = createAsyncThunk(
+  "user/login",
+  // rejectWithValue ENABLES CUSTOM ERROR MESSAGING
+  async (initialUser, { rejectWithValue }) => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/user/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        mode: "cors",
+        body: JSON.stringify({
+          userName: initialUser.userName,
+          password: initialUser.password,
+        }),
+      });
+      const responseData = await response.json();
+      if (!response.ok) {
+        // NON-NETWORK (NON 500 STATUS CODE) RELATED ERRORS
+        return rejectWithValue(responseData.message);
+      }
+
+      return responseData.user;
+    } catch (error) {
+      // NETWORK RELATED ERRORS
+      console.log("from login thunk catch"); //test
       console.log(error.message); //test
       return rejectWithValue(error.message);
     }
@@ -94,7 +126,7 @@ const userSlice = createSlice({
         // NOTE: DATE CLASS OR ANY RANDOM VALUE GENERATOR DOESN'T BELONG IN REDUCERS
         // Original Signup STARTS THE FULL 1 HOUR
         //state.user.tokenExpiration = new Date().getTime() + 1000 * 60 * 60;
-        state.user.tokenExpiration = action.payload.expiration; // test
+        state.user.tokenExpiration = action.payload.expiration;
         localStorage.setItem(
           "userData",
           JSON.stringify({
@@ -115,6 +147,42 @@ const userSlice = createSlice({
         console.log(action.error.message); // ALLOWS PRE SET STANDARD MESSAGING
         state.error = action.payload; // CUSTOM
         //state.error = action.error.message; // STANDARD-PRESET
+      })
+      .addCase(login.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        console.log("final payload received from controllers"); // test
+        console.log(action.payload); // test
+        state.user.userName = action.payload.userName;
+        state.user.userId = action.payload.userId;
+        state.user.userAvatar = action.payload.userAvatar;
+        state.user.posts = action.payload.posts;
+        state.user.token = action.payload.token;
+        // First, response data gets assigned to state...
+        state.user.tokenExpiration = action.payload.expiration;
+        localStorage.setItem(
+          "userData",
+          JSON.stringify({
+            userName: action.payload.userName,
+            userId: action.payload.userId,
+            userAvatar: action.payload.userAvatar,
+            posts: action.payload.posts,
+            token: action.payload.token,
+            // Then, state gets assigned to Local Storage...
+            expiration: state.user.tokenExpiration.toString(),
+          })
+        );
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.status = "failed";
+        console.log("action.payload"); //test
+        console.log(action.payload); //test  ALLOWS CUSTOM MESSAGING
+        console.log("action.error"); //test
+        console.log(action.error.message); // test ALLOWS PRE SET STANDARD MESSAGING
+        state.error = action.payload; // CUSTOM
+        //state.error = action.error.message// STANDARD-PRESET
       });
   },
 });

@@ -1,18 +1,22 @@
 import React, { useState } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import theme from "../../../theme/theme";
+import ErrorModal from "../../shared/errorModal/ErrorModal";
+import { login, clearError, selectUserStatus } from "../../../redux/user-slice.js";
 
 export const styles = {
   container: {
     textAlign: "center",
     flexGrow: 1,
     margin: "3rem auto auto auto",
-    border: "2px solid #005BBB",
     borderRadius: "5px",
     maxWidth: {
       mobile: "90%",
@@ -34,7 +38,7 @@ export const styles = {
     fontWeight: 600,
     fontSize: "1.25rem",
     borderRadius: 0,
-    borderBottom: "3px solid #005BBB",
+    borderBottom: "1px solid #005BBB",
     "&: hover": {
       background: "rgba(0, 91, 187, 0.35)",
     },
@@ -67,9 +71,19 @@ export const styles = {
 };
 
 const Login = () => {
+  // From Router
+  const navigate = useNavigate();
+
+  // from Redux
+  const dispatch = useDispatch();
+  const userStatus = useSelector(selectUserStatus);
+
+  // Local state
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
+  // Handler functions
   const handleUserNameChange = (event) => {
     setUserName(event.target.value);
   };
@@ -78,10 +92,26 @@ const Login = () => {
     setPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(userName); // test
-    console.log(password); // test
+    if (userStatus === "idle") {
+      try {
+        await dispatch(login({ userName, password })).unwrap();
+        setUserName("");
+        setPassword("");
+        navigate("/");
+      } catch (error) {
+        // For debugging only. error gets populated by createAsyncThunk abstraction
+        console.log("from LOGIN submit"); //test
+        console.log(error); // test
+        setErrorMessage(error); // Local Error state get populated by Redux error
+      }
+    }
+  };
+
+  const handleErrorClear = () => {
+    dispatch(clearError());
+    setErrorMessage("");
     setUserName("");
     setPassword("");
   };
@@ -90,7 +120,7 @@ const Login = () => {
     <Box component="form" sx={styles.container} onSubmit={handleSubmit} autoComplete="off">
       <Stack spacing={3} sx={{ alignItems: "center" }}>
         <Typography component="h3" sx={styles.title}>
-          Login
+          LOGIN
         </Typography>
         <TextField
           fullWidth
@@ -119,7 +149,7 @@ const Login = () => {
           label="Password"
           type="password"
           required
-          helperText={password ? "Password must be at least 6 characters long" : undefined}
+          //helperText="Forgot password?"
           InputProps={{
             sx: styles.inputProps,
           }}
@@ -130,10 +160,38 @@ const Login = () => {
           value={password}
           onChange={handlePasswordChange}
         />
-        <Button type="submit" variant="contained" size="large" sx={styles.button}>
-          SUBMIT
+        <Typography
+          aria-label="password-reset"
+          variant="caption"
+          component={RouterLink}
+          to="/signup" // To be set to special reset password route
+          sx={{
+            textDecoration: "none",
+            alignSelf: "flex-end",
+            fontWeight: 600,
+            color: theme.palette.primary.light,
+          }}
+        >
+          Forgot password?
+        </Typography>
+        <Button
+          type="submit"
+          disabled={userStatus === "loading"}
+          variant="contained"
+          sx={{ ...styles.button, width: "100%" }}
+          endIcon={
+            userStatus === "loading" ? <CircularProgress color="secondary" size={25} /> : undefined
+          }
+        >
+          {userStatus === "loading" ? "SUBMITTING" : "SUBMIT"}
         </Button>
       </Stack>
+      <ErrorModal
+        open={!!errorMessage}
+        onClose={handleErrorClear}
+        clearModal={handleErrorClear}
+        errorMessage={errorMessage}
+      />
     </Box>
   );
 };
