@@ -64,8 +64,8 @@ const App = () => {
       <Routes>
         <Route path="" exact element={<PostsList />} />
         {isLoggedIn && <Route path="myposts" element={<MyPosts />} />}
-        <Route path="login" element={<Login />} />
-        <Route path="signup" element={<Signup />} />
+        {!isLoggedIn && <Route path="login" element={<Login />} />}
+        {!isLoggedIn && <Route path="signup" element={<Signup />} />}
         <Route path="*" element={<Navigate replace to="" />} />
       </Routes>
     </ThemeProvider>

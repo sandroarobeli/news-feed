@@ -18,18 +18,11 @@ router.post(
 );
 
 // Login a User
-// router.post(
-//     '/login',
-//     [
-//         check('email')
-//             .not()
-//             .isEmpty(),
-//         check('password')
-//             .not()
-//             .isEmpty()
-//     ],
-//     userControllers.login
-// )
+router.post(
+  "/login",
+  [check("userName").not().isEmpty().trim().escape(), check("password").not().isEmpty()],
+  userControllers.login
+);
 
 // MORE TO BE ADDED...
 
