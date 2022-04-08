@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Box from "@mui/material/Box";
@@ -157,9 +157,9 @@ const Signup = () => {
     if (userStatus === "idle") {
       try {
         await dispatch(signup({ userName, password, userAvatar })).unwrap();
-        setUserName("");
-        setPassword("");
-        setUserAvatar("");
+        // setUserName("");  // Can't update state on an unmounted component
+        // setPassword("");  // Hence the cleanup function below
+        // setUserAvatar("");
         navigate("/");
       } catch (error) {
         // NOTE: SINCE ERRORS COULD BE GENERATED FROM EITHER CLOUDINARY OR REDUX,
@@ -173,6 +173,15 @@ const Signup = () => {
       }
     }
   };
+
+  // Cleanup function
+  useEffect(() => {
+    return () => {
+      setUserName("");
+      setPassword("");
+      setUserAvatar("");
+    };
+  }, []);
 
   const handleErrorClear = () => {
     dispatch(clearError());
