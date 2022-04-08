@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Box from "@mui/material/Box";
@@ -97,8 +97,8 @@ const Login = () => {
     if (userStatus === "idle") {
       try {
         await dispatch(login({ userName, password })).unwrap();
-        setUserName("");
-        setPassword("");
+        // setUserName("");  // Can't update state on an unmounted component
+        // setPassword("");  // Hence the cleanup function below
         navigate("/");
       } catch (error) {
         // For debugging only. error gets populated by createAsyncThunk abstraction
@@ -108,6 +108,14 @@ const Login = () => {
       }
     }
   };
+
+  // Cleanup function
+  useEffect(() => {
+    return () => {
+      setUserName("");
+      setPassword("");
+    };
+  }, []);
 
   const handleErrorClear = () => {
     dispatch(clearError());
