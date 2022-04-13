@@ -66,7 +66,7 @@ const SettingsDrawer = (props) => {
           disableRipple
           aria-label="Edit user profile"
           component={RouterLink}
-          to="" // To edit user route
+          to="/updateUser"
           onClick={props.onClose}
           sx={styles.editButton}
         >

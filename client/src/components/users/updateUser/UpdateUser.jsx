@@ -11,7 +11,15 @@ import Button from "@mui/material/Button";
 import theme from "../../../theme/theme";
 import ErrorModal from "../../shared/errorModal/ErrorModal";
 import AvatarInput from "../avatarInput/AvatarInput";
-import { signup, clearError, selectUserStatus } from "../../../redux/user-slice.js";
+import SnackbarSuccess from "../../shared/snackbarSuccess/SnackbarSuccess";
+import {
+  update,
+  clearError,
+  selectToken,
+  selectUserStatus,
+  selectUserName,
+  selectUserAvatar,
+} from "../../../redux/user-slice.js";
 
 export const styles = {
   container: {
@@ -58,6 +66,7 @@ export const styles = {
     background: theme.palette.primary.main,
     borderRadius: "3px",
     boxShadow: "4px 4px 4px rgba(0, 91, 187, 0.35)",
+
     "&:hover": {
       color: theme.palette.secondary.main,
       background: theme.palette.primary.light,
@@ -73,29 +82,28 @@ export const styles = {
   },
 };
 
-const Signup = () => {
+const UpdateUser = () => {
   // From Router
   const navigate = useNavigate();
 
   // from Redux
   const dispatch = useDispatch();
+  const userToken = useSelector(selectToken);
   const userStatus = useSelector(selectUserStatus);
-  // useSelector(selectUserError); // Not needed. Thunk sends errors via dispatch
+  const userNameFromStore = useSelector(selectUserName);
+  const userAvatarFromStore = useSelector(selectUserAvatar);
 
   // Local state
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
-  const [userAvatar, setUserAvatar] = useState("");
+  const [currentUserName, setCurrentUserName] = useState(userNameFromStore);
+  const [updatedUserName, setUpdatedUserName] = useState(userNameFromStore);
+  const [userAvatar, setUserAvatar] = useState(userAvatarFromStore);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   // Handler functions
   const handleUserNameChange = (event) => {
-    setUserName(event.target.value);
-  };
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
+    setUpdatedUserName(event.target.value);
   };
 
   // This picture upload is designed for a single file upload!
@@ -150,31 +158,29 @@ const Signup = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (userStatus === "idle") {
-      try {
-        await dispatch(signup({ userName, password, userAvatar })).unwrap();
-        // setUserName("");  // Can't update state on an unmounted component
-        // setPassword("");  // Hence the cleanup function below
-        // setUserAvatar("");
-        navigate("/");
-      } catch (error) {
-        // NOTE: SINCE ERRORS COULD BE GENERATED FROM EITHER CLOUDINARY OR REDUX,
-        // AND THERE IS ONLY ONE ERROR MODULE, REDUX ERROR GOES TO LOCAL ERROR STATE
-        // AND ONLY THEN GETS REFLECTED IN ERROR MODULE AS ITS TEXT.
 
-        // For debugging only. error gets populated by createAsyncThunk abstraction
-        console.log("from SIGNUP submit"); //test
-        console.log(error); // test
-        setErrorMessage(error); // Local Error state get populated by Redux error
-      }
+    try {
+      await dispatch(update({ userToken, currentUserName, updatedUserName, userAvatar })).unwrap();
+      //setSnackbarOpen(true); // NOT USED NOW. KEEP IT AS A USEFUL FEATURE FOR FUTURE!!!
+      // FOR EXAMPLE: WHEN POST IS ADDED OR EDITED ETC. GREAT CONFIRMATION FEATURE!
+      navigate("/");
+    } catch (error) {
+      // NOTE: SINCE ERRORS COULD BE GENERATED FROM EITHER CLOUDINARY OR REDUX,
+      // AND THERE IS ONLY ONE ERROR MODULE, REDUX ERROR GOES TO LOCAL ERROR STATE
+      // AND ONLY THEN GETS REFLECTED IN ERROR MODULE AS ITS TEXT.
+
+      // For debugging only. error gets populated by createAsyncThunk abstraction
+      console.log("from UPDATE submit"); //test
+      console.log(error); // test
+      setErrorMessage(error); // Local Error state get populated by Redux error
     }
   };
 
   // Cleanup function
   useEffect(() => {
     return () => {
-      setUserName("");
-      setPassword("");
+      setCurrentUserName("");
+      setUpdatedUserName("");
       setUserAvatar("");
     };
   }, []);
@@ -182,8 +188,8 @@ const Signup = () => {
   const handleErrorClear = () => {
     dispatch(clearError());
     setErrorMessage("");
-    setUserName("");
-    setPassword("");
+    setUpdatedUserName("");
+    //setPassword("");
     setUserAvatar("");
   };
 
@@ -191,15 +197,15 @@ const Signup = () => {
     <Box component="form" sx={styles.container} onSubmit={handleSubmit} autoComplete="off">
       <Stack spacing={3} sx={{ alignItems: "center" }}>
         <Typography component="h3" sx={styles.title}>
-          SIGN UP
+          UPDATE PROFILE
         </Typography>
         <TextField
           fullWidth
           variant="filled"
-          aria-label="userName"
-          name="userName"
-          id="userName"
-          label="Username"
+          aria-label="newUserName"
+          name="newUserName"
+          id="newUserName"
+          label="New Username"
           type="text"
           required
           InputProps={{
@@ -208,32 +214,8 @@ const Signup = () => {
           InputLabelProps={{
             sx: styles.inputLabelProps,
           }}
-          value={userName}
+          value={updatedUserName}
           onChange={handleUserNameChange}
-        />
-        <TextField
-          fullWidth
-          variant="filled"
-          aria-label="password"
-          name="password"
-          id="password"
-          label="Password"
-          type="password"
-          required
-          helperText={
-            password && password.length < 6
-              ? "Password must be at least 6 characters long"
-              : undefined
-          }
-          InputProps={{
-            sx: styles.inputProps,
-          }}
-          InputLabelProps={{
-            sx: styles.inputLabelProps,
-          }}
-          FormHelperTextProps={{ sx: styles.helperTextProps }}
-          value={password}
-          onChange={handlePasswordChange}
         />
         <AvatarInput
           onPictureUpload={handleAvatarUpload}
@@ -249,7 +231,7 @@ const Signup = () => {
             userStatus === "loading" ? <CircularProgress color="secondary" size={25} /> : undefined
           }
         >
-          {userStatus === "loading" ? "SUBMITTING" : "SUBMIT"}
+          {userStatus === "loading" ? "UPDATING" : "UPDATE"}
         </Button>
       </Stack>
       <ErrorModal
@@ -258,8 +240,14 @@ const Signup = () => {
         clearModal={handleErrorClear}
         errorMessage={errorMessage}
       />
+      <SnackbarSuccess
+        open={snackbarOpen}
+        message={"Profile update successful!"}
+        onClose={() => setSnackbarOpen(false)}
+        onClick={() => setSnackbarOpen(false)}
+      />
     </Box>
   );
 };
 
-export default Signup;
+export default UpdateUser;

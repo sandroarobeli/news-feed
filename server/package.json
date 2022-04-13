@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/sandroarobeli/news-feed#readme",
   "dependencies": {
+    "@sendgrid/mail": "^7.6.2",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.29.0",
     "cors": "^2.8.5",

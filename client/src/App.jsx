@@ -10,6 +10,11 @@ import PostsList from "./components/posts/postsList/PostsList";
 import MyPosts from "./components/posts/myPosts/MyPosts";
 import Login from "./components/users/login/Login";
 import Signup from "./components/users/signup/Signup";
+import UpdateUser from "./components/users/updateUser/UpdateUser";
+import PasswordResetEmail from "./components/users/passwordResetEmail/PasswordResetEmail";
+import Confirmation from "./components/shared/confirmation/Confirmation";
+import PasswordResetForm from "./components/users/passwordResetForm/PasswordResetForm";
+import PasswordLinkExpired from "./components/users/passwordLinkExpired/PasswordLinkExpired";
 import { selectToken, selectTokenExpiration, logout, autoLogin } from "./redux/user-slice.js";
 
 const App = () => {
@@ -23,6 +28,28 @@ const App = () => {
 
   // Remaining time till auto logout
   let remainingTime = userTokenExpiration - new Date().getTime();
+
+  // If Link is live, PasswordResetForm Route is available
+  // Otherwise, PasswordLinkExpired Route is available
+  let linkIsAvailable;
+  // Remaining time till password reset link expires
+  let passwordLinkExpiration = JSON.parse(localStorage.getItem("emailTokenData"));
+
+  if (
+    passwordLinkExpiration &&
+    passwordLinkExpiration.emailTokenExpiration &&
+    Number.parseInt(passwordLinkExpiration.emailTokenExpiration) > new Date().getTime()
+  ) {
+    linkIsAvailable = true;
+  } else {
+    linkIsAvailable = false;
+  }
+
+  // test Start
+  useEffect(() => {
+    console.log(linkIsAvailable);
+  }, [linkIsAvailable]);
+  // test End
 
   // If both variables are present, meaning user is logged in, the countdown to auto logout begins.
   if (userToken && userTokenExpiration) {
@@ -66,6 +93,13 @@ const App = () => {
         {isLoggedIn && <Route path="myposts" element={<MyPosts />} />}
         {!isLoggedIn && <Route path="login" element={<Login />} />}
         {!isLoggedIn && <Route path="signup" element={<Signup />} />}
+        {isLoggedIn && <Route path="updateUser" element={<UpdateUser />} />}
+        <Route path="resetPasswordEmail" element={<PasswordResetEmail />} />
+        <Route path="confirmation" element={<Confirmation />} />
+        <Route
+          path="resetPasswordForm"
+          element={linkIsAvailable ? <PasswordResetForm /> : <PasswordLinkExpired />}
+        />
         <Route path="*" element={<Navigate replace to="" />} />
       </Routes>
     </ThemeProvider>

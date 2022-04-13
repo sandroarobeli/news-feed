@@ -46,7 +46,7 @@ const login = async (req, res, next) => {
     }
     // Sending back whatever data we want with created token
     // res.status(201).json({ user: createdUser })
-    res.status(201).json({
+    res.status(200).json({
       user: {
         userName: existingUser.userName,
         userId: existingUser._id,
