@@ -46,7 +46,7 @@ const signup = async (req, res, next) => {
   });
 
   try {
-    // await createdUser.save(); // RESTORE
+    await createdUser.save(); // RESTORE
 
     // Create token, so we can send it back as proof of authorization.
     // We get to decide what data we encode. This time it's userId
