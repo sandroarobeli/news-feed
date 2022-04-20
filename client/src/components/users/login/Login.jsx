@@ -26,8 +26,8 @@ export const styles = {
     padding: "1rem 1rem 3rem 1rem",
   },
   title: {
-    fontSize: theme.typography.h4.fontSize,
-    lineHeight: theme.typography.h4.lineHeight,
+    fontSize: theme.typography.h5.fontSize,
+    lineHeight: theme.typography.h5.lineHeight,
     fontWeight: 600,
     color: theme.palette.primary.main,
     margin: "auto",

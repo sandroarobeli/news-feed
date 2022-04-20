@@ -48,7 +48,7 @@ const AvatarInput = (props) => {
           style={{ display: "none" }}
           onChange={props.onPictureUpload}
         />
-        <Avatar variant="square" alt="User avatar" src={props.userAvatar} sx={styles.avatar} />
+        <Avatar variant="square" alt={props.userName} src={props.userAvatar} sx={styles.avatar} />
         <Button
           type="button"
           sx={styles.button}

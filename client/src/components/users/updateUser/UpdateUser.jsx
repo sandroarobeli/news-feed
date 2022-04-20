@@ -131,7 +131,8 @@ const UpdateUser = () => {
         formData.append("api_key", signedData.apiKey);
         formData.append("timestamp", signedData.timestamp);
         formData.append("signature", signedData.signature);
-        formData.append("eager", "c_fill,w_150,h_150"); // c_pad,w_150,h_150
+        formData.append("eager", "b_auto,c_fill_pad,g_auto,h_150,w_600");
+        //formData.append("eager", "c_fill,w_150,h_150");
         formData.append("folder", "news-feed");
       }
       const response = await fetch(url, {

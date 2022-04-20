@@ -35,6 +35,11 @@ const update = async (req, res, next) => {
       { userName: updatedUserName, userAvatar },
       { new: true }
     );
+    console.log("updatedUser"); // test
+    console.log(updatedUser); // test
+    // res.status(200).json({
+    //   user: updatedUser,
+    // });
     res.status(200).json({
       user: {
         userName: updatedUser.userName,

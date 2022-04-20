@@ -15,6 +15,8 @@ import PasswordResetEmail from "./components/users/passwordResetEmail/PasswordRe
 import Confirmation from "./components/shared/confirmation/Confirmation";
 import PasswordResetForm from "./components/users/passwordResetForm/PasswordResetForm";
 import PasswordLinkExpired from "./components/users/passwordLinkExpired/PasswordLinkExpired";
+import NewPost from "./components/posts/newPost/NewPost";
+import SinglePost from "./components/posts/singlePost/SinglePost";
 import { selectToken, selectTokenExpiration, logout, autoLogin } from "./redux/user-slice.js";
 
 const App = () => {
@@ -90,10 +92,12 @@ const App = () => {
       <Header />
       <Routes>
         <Route path="" exact element={<PostsList />} />
+        <Route exact path="view/:postId" element={<SinglePost />} />
         {isLoggedIn && <Route path="myposts" element={<MyPosts />} />}
         {!isLoggedIn && <Route path="login" element={<Login />} />}
         {!isLoggedIn && <Route path="signup" element={<Signup />} />}
         {isLoggedIn && <Route path="updateUser" element={<UpdateUser />} />}
+        {isLoggedIn && <Route path="createPost" element={<NewPost />} />}
         <Route path="resetPasswordEmail" element={<PasswordResetEmail />} />
         <Route path="confirmation" element={<Confirmation />} />
         <Route

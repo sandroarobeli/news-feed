@@ -6,11 +6,12 @@ const apiSecret = cloudinary.config().api_secret;
 const fileUploadForm = () => {
   const timestamp = Math.round(new Date().getTime() / 1000);
 
+  // TENTATIVELY: LOOKS LIKE ALL THE FORMATS, EAGERS ETC GO HERE AND ARE REPEATED AT FORMDATA!!!
   const signature = cloudinary.utils.api_sign_request(
     {
       timestamp: timestamp,
-      //eager: "c_pad,w_150,h_150",
-      eager: "c_fill,w_150,h_150",
+      eager: "b_auto,c_fill_pad,g_auto,h_150,w_600",
+      //eager: "b_auto,c_pad,h_150,w_600",
       folder: "news-feed",
     },
     apiSecret
@@ -19,7 +20,4 @@ const fileUploadForm = () => {
   return { timestamp, signature };
 };
 
-// module.exports = {   // RESTORE IF NEEDED
-//   fileUploadForm,
-// };
-exports.fileUploadForm = fileUploadForm;
+module.exports = fileUploadForm;
