@@ -80,7 +80,6 @@ const Signup = () => {
   // from Redux
   const dispatch = useDispatch();
   const userStatus = useSelector(selectUserStatus);
-  // useSelector(selectUserError); // Not needed. Thunk sends errors via dispatch
 
   // Local state
   const [userName, setUserName] = useState("");
@@ -111,14 +110,11 @@ const Signup = () => {
 
     try {
       const signedResponse = await fetch("http://127.0.0.1:5000/api/image");
-      // console.log(signedResponse); // test
       const signedData = await signedResponse.json();
-      // console.log(signedData); // test
-      // console.log(file); // test
       const url = "https://api.cloudinary.com/v1_1/" + signedData.cloudName + "/auto/upload";
 
       if (typeIsAllowed) {
-        setIsLoading(true); // test
+        setIsLoading(true);
         formData.append("file", file);
         formData.append("api_key", signedData.apiKey);
         formData.append("timestamp", signedData.timestamp);
@@ -133,16 +129,12 @@ const Signup = () => {
       });
       const imageResponse = await response.json();
       if (!response.ok) {
-        // throw new Error("Attachment failed. Please try again."); // test
-        setErrorMessage(imageResponse.error.message); // RESTORE
+        setErrorMessage(imageResponse.error.message);
       }
-      //console.log(imageResponse); // test
       // const avatarUrl = imageResponse.secure_url; // Original secure URL
       const avatarUrl = imageResponse.eager[0].secure_url; // URL with stylings
       setUserAvatar(avatarUrl);
       setIsLoading(false);
-
-      // setSuccessBarOpen(true);
     } catch (error) {
       setErrorMessage(error.message); // Local Error state gets populated by Cloudinary error
       setIsLoading(false);
@@ -154,9 +146,6 @@ const Signup = () => {
     if (userStatus === "idle") {
       try {
         await dispatch(signup({ userName, password, userAvatar })).unwrap();
-        // setUserName("");  // Can't update state on an unmounted component
-        // setPassword("");  // Hence the cleanup function below
-        // setUserAvatar("");
         navigate("/");
       } catch (error) {
         // NOTE: SINCE ERRORS COULD BE GENERATED FROM EITHER CLOUDINARY OR REDUX,

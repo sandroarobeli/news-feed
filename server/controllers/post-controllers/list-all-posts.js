@@ -1,7 +1,3 @@
-const mongoose = require("mongoose");
-const { validationResult } = require("express-validator");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const Post = require("../../models/post-model");
@@ -13,20 +9,6 @@ const listAllPosts = async (req, res, next) => {
     if (posts.length === 0) {
       res.status(200).json({ posts: [] });
     }
-    // res.status(200).json({
-    //   posts: posts.map((post) => ({
-    //     _id: post._id,
-    //     content: post.content,
-    //     media: post.media,
-    //     creator: {
-    //       userName: post.creator.userName,
-    //       userAvatar: post.creator.userAvatar,
-    //       numberOfPosts: post.creator.posts.length,
-    //     },
-    //     date: post.date,
-    //     reactions: post.reactions,
-    //   })),
-    // });
 
     res.status(200).json({ posts: posts });
   } catch (error) {

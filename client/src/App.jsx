@@ -59,8 +59,6 @@ const App = () => {
       dispatch(logout());
     }, remainingTime);
   }
-  // console.log("remainingTime"); //test
-  // console.log(remainingTime); // test
 
   // useEffect always runs AFTER the component renders
   // Ensures user stays logged in upon page reload (unless token expired) using localStorage and autoLogin

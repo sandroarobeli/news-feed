@@ -21,8 +21,7 @@ const downvote = async (req, res, next) => {
       },
       { new: true }
     );
-    console.log("Reactions Update:"); // test
-    console.log(updatedPost.reactions); // test
+
     res.status(200).json({ post: updatedPost });
   } catch (error) {
     return next(new Error(`Post downvoting unavailable: ${error.message}`));

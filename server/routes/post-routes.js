@@ -14,12 +14,7 @@ const router = express.Router();
 router.get("/", listAllPosts);
 
 // Create a Post. Privileged, requires authentication
-router.post(
-  "/create",
-  checkAuthorization,
-  [check("content").not().isEmpty().trim()], // .escape()
-  create
-);
+router.post("/create", checkAuthorization, [check("content").not().isEmpty().trim()], create);
 
 // Upvote a Post
 router.patch("/upvote", upvote);
