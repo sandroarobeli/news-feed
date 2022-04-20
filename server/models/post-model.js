@@ -32,7 +32,6 @@ const postSchema = new mongoose.Schema({
 postSchema.pre("save", async function (next) {
   const post = this;
   await post.populate("creator");
-  console.log(post); // test
   next();
 });
 

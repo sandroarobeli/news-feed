@@ -1,5 +1,4 @@
 const Post = require("../../models/post-model");
-const User = require("../../models/user-model");
 
 // Upvote a Post
 const upvote = async (req, res, next) => {
@@ -22,8 +21,7 @@ const upvote = async (req, res, next) => {
       },
       { new: true }
     );
-    console.log("Reactions Update:"); // test
-    console.log(updatedPost.reactions); // test
+
     res.status(200).json({ post: updatedPost });
   } catch (error) {
     return next(new Error(`Post upvoting unavailable: ${error.message}`));

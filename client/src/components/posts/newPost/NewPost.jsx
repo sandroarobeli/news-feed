@@ -7,22 +7,12 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import CardActions from "@mui/material/CardActions";
-import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
-import Avatar from "@mui/material/Avatar";
 
 import theme from "../../../theme/theme";
 import ErrorModal from "../../shared/errorModal/ErrorModal";
+import MediaLoader from "../../shared/mediaLoader/MediaLoader";
 import { selectUserId, selectToken } from "../../../redux/user-slice";
-import {
-  createPost,
-  clearPostError,
-  selectPostStatus,
-  listAllPosts,
-} from "../../../redux/posts-slice";
+import { createPost, clearPostError, selectPostStatus } from "../../../redux/posts-slice";
 
 const styles = {
   container: {
@@ -78,40 +68,6 @@ const styles = {
   },
 };
 
-const MediaLoader = (props) => {
-  return (
-    <Card
-      component="label"
-      htmlFor="media"
-      sx={{
-        width: "100%",
-      }}
-    >
-      <input
-        id="media"
-        name="media"
-        type="file"
-        accept="*"
-        style={{ display: "none" }}
-        onChange={props.onMediaUpload}
-      />
-      <CardMedia component={props.mediaFormat} height="150" image={props.media} alt={props.alt} />
-      <CardActions>
-        <Button
-          type="button"
-          component="span"
-          sx={styles.button}
-          endIcon={
-            props.isLoading ? <CircularProgress color="secondary" size={25} /> : <PhotoCameraIcon />
-          }
-        >
-          {props.isLoading ? "loading " : "Upload Media"}
-        </Button>
-      </CardActions>
-    </Card>
-  );
-};
-// FROM HERE: FINISH ADDING TEXT, SUBMIT MOCK, REDUX, STATE ETC. THEN GET BACK TO IMAGE UPLOAD
 const NewPost = () => {
   // From Router
   const navigate = useNavigate();
@@ -121,9 +77,6 @@ const NewPost = () => {
   const currentUser = useSelector(selectUserId);
   const userToken = useSelector(selectToken);
   const postStatus = useSelector(selectPostStatus);
-
-  // console.log("Current User:"); // test
-  // console.log(currentUser); // test
 
   // Local state
   const [content, setContent] = useState("");
@@ -145,17 +98,14 @@ const NewPost = () => {
     if (file.type.includes("video")) {
       setMediaFormat("iframe");
     } else {
-      setMediaFormat("img"); // test
+      setMediaFormat("img");
     }
 
     const sizeIsAllowed = file.size < 5000000;
 
     try {
       const signedResponse = await fetch("http://127.0.0.1:5000/api/image");
-      // console.log(signedResponse); // test
       const signedData = await signedResponse.json();
-      console.log(signedData); // test
-      console.log(file); // test
       const url = "https://api.cloudinary.com/v1_1/" + signedData.cloudName + "/auto/upload";
       // TENTATIVELY: LOOKS LIKE ALL THE FORMATS, EAGERS ETC GO HERE AND ARE REPEATED AT FORMDATA!!!
       if (sizeIsAllowed) {
@@ -177,7 +127,7 @@ const NewPost = () => {
       if (!response.ok) {
         setErrorMessage(imageResponse.error.message);
       }
-      //console.log(imageResponse); // test
+
       const mediaUrl = imageResponse.eager[0].secure_url; // URL with stylings
       setMedia(mediaUrl);
       setIsLoading(false);
@@ -189,7 +139,7 @@ const NewPost = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // if (postStatus === "idle") {
+
     try {
       await dispatch(createPost({ userToken, creator: currentUser, content, media })).unwrap();
       navigate("/"); // fetch posts gets invoked after going to posts List page
@@ -198,7 +148,6 @@ const NewPost = () => {
       console.log(error); // test
       setErrorMessage(error); // Local Error state get populated by Redux error
     }
-    //}
   };
 
   // Cleanup function

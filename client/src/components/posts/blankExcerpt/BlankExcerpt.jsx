@@ -17,9 +17,7 @@ const BlankExcerpt = () => {
   return (
     <Card sx={styles.container}>
       <CardContent>
-        <Typography variant="h3" component="h3" color="text">
-          Nothing posted yet...
-        </Typography>
+        <Typography variant="h3" component="h3" color="text"></Typography>
       </CardContent>
     </Card>
   );

@@ -5,8 +5,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 
-//import { styles } from "./styles";
-
 export const styles = {
   dialog: {
     margin: "auto",
@@ -47,7 +45,6 @@ export const styles = {
 const ErrorModal = (props) => {
   return (
     <Dialog
-      //fullWidth
       open={props.open}
       onClose={props.onClose}
       transitionDuration={{ enter: 500, exit: 100 }}

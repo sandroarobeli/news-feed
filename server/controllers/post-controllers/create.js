@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 const { validationResult } = require("express-validator");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const Post = require("../../models/post-model");
@@ -43,9 +41,6 @@ const create = async (req, res, next) => {
     return next(new Error(`Creating Post failed: ${error.message}`));
   }
 
-  console.log("existingUser"); // test
-  console.log(existingUser); // test
-
   // Once found, we make sure (here, on backend) that ONLY whomever token belongs to
   // MAY create a new post!
   if (existingUser._id.toString() !== req.userData.userId) {
@@ -71,8 +66,4 @@ const create = async (req, res, next) => {
   }
 };
 
-// FROM HERE: ADD THE WHOLE BLOCK TO THIS CONTROLLER, THEN MOVE TO THUNK
-// USER GETS ADDED HERE!
-// DO POPULATE AND TEST IT, SO THUNK STATE GETS ALREADY FILLED OUT CREATORS,
-// WHICH WILL GO TO POPULATE USER AVATARS AND AUTHORS IN POSTS
 module.exports = create;

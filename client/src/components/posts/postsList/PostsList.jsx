@@ -1,45 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link as RouterLink } from "react-router-dom";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Stack from "@mui/material/Stack";
-import Avatar from "@mui/material/Avatar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import CreateIcon from "@mui/icons-material/Create";
-import SettingsIcon from "@mui/icons-material/Settings";
 import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import { CardActionArea } from "@mui/material";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 
-import theme from "../../../theme/theme";
 import CurrentUser from "../../shared/currentUser/CurrentUser";
-import PostAuthor from "../postAuthor/PostAuthor";
-import TimeStamp from "../timeStamp/TimeStamp";
 import ErrorModal from "../../shared/errorModal/ErrorModal";
 import LoadingSpinner from "../../shared/loadingSpinner/LoadingSpinner";
 import BlankExcerpt from "../blankExcerpt/BlankExcerpt";
 import PostExcerpt from "../postExcerpt/PostExcerpt";
-import {
-  selectToken,
-  selectUserName,
-  selectUserAvatar,
-  selectUserStatus,
-} from "../../../redux/user-slice";
+import { selectToken, selectUserName, selectUserAvatar } from "../../../redux/user-slice";
 import {
   selectAllPosts,
-  selectPostError,
   clearPostError,
   selectPostStatus,
   listAllPosts,
   upvotePost,
   downvotePost,
 } from "../../../redux/posts-slice";
-const styles = {};
+
+const styles = {
+  container: {
+    border: "1px solid red",
+    margin: "0 auto 2rem auto",
+  },
+};
 
 const PostsList = () => {
   // From Redux
@@ -47,10 +30,8 @@ const PostsList = () => {
   const userToken = useSelector(selectToken);
   const userName = useSelector(selectUserName);
   const userAvatar = useSelector(selectUserAvatar);
-  const userStatus = useSelector(selectUserStatus);
   const posts = useSelector(selectAllPosts);
   const postStatus = useSelector(selectPostStatus);
-  const postError = useSelector(selectPostError);
 
   console.log("posts"); // test
   console.log(posts); // test
@@ -67,7 +48,7 @@ const PostsList = () => {
     if (postStatus === "idle") {
       dispatch(listAllPosts());
     }
-  }, [dispatch, postStatus]); // postStatus, dispatch, userStatus
+  }, [dispatch, postStatus]);
 
   // Handling functions
   const handleSettingsDrawerOpen = () => {
@@ -130,18 +111,8 @@ const PostsList = () => {
       );
   }
 
-  // 2. CONTINUE FOLLOWING THE REDUX TUTORIAL...
-  // CONTINUE CLICKABLE ==> TAKES YOU TO VIEW, PLUS BUTTONS (EDIT, DELETE)
-  // ARE NOT CLICKABLE. AS PER MUI CARD DESIGNS...
-  // console.log(posts); // test
   return (
-    <Box
-      component="section"
-      sx={{
-        border: "1px solid red", // test
-        margin: "0 auto 2rem auto",
-      }}
-    >
+    <Box component="section" sx={styles.container}>
       {isLoggedIn && (
         <CurrentUser
           userName={userName}
@@ -161,5 +132,5 @@ const PostsList = () => {
     </Box>
   );
 };
-// open={drawerOpen} onDrawerClose={handleDrawerClose}
+
 export default PostsList;

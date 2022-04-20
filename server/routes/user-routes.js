@@ -9,20 +9,13 @@ const passwordResetLinkValidate = require("../controllers/user-controllers/passw
 const passwordReset = require("../controllers/user-controllers/password-reset");
 const checkAuthorization = require("../modules/check-authorization");
 
-const jwt = require("jsonwebtoken"); // test
-require("dotenv").config(); // test
-
 // Initializing the router object
 const router = express.Router();
 
 // Signup a User
 router.post(
   "/signup",
-  [
-    check("userName").not().isEmpty().trim().escape(),
-    check("password").isLength({ min: 6 }), // Adjust-restore per user requirements
-    //check("userAvatar").not().isEmpty().trim().escape(), // avatar is not a must...
-  ],
+  [check("userName").not().isEmpty().trim().escape(), check("password").isLength({ min: 6 })],
   signup
 );
 

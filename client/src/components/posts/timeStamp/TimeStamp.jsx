@@ -5,9 +5,6 @@ import Typography from "@mui/material/Typography";
 
 const styles = {
   container: {
-    // display: "flex",
-    // alignItems: "center",
-    // justifyContent: "start",
     marginBottom: "1rem",
   },
   time: {

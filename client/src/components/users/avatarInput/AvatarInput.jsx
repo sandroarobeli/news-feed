@@ -16,7 +16,6 @@ const styles = {
     color: theme.palette.primary.main,
     height: "150px",
     width: "150px",
-    //height: "auto",
   },
   button: {
     padding: "0.75rem",

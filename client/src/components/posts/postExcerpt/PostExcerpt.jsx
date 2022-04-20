@@ -12,7 +12,25 @@ import Box from "@mui/material/Box";
 import PostAuthor from "../postAuthor/PostAuthor";
 import TimeStamp from "../timeStamp/TimeStamp";
 
-const styles = {};
+const styles = {
+  container: {
+    maxWidth: "80vw",
+    minWidth: "275px",
+    padding: "0.25rem",
+    margin: "1rem auto auto auto",
+    // height: "250px", // test
+  },
+  cardActions: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  reactions: {
+    color: "#000000",
+    marginLeft: "0.5rem",
+  },
+};
 
 const reactionEmoji = {
   thumbsUp: "👍",
@@ -21,16 +39,7 @@ const reactionEmoji = {
 
 const PostExcerpt = (props) => {
   return (
-    <Card
-      // key={props.key}
-      sx={{
-        maxWidth: "80vw",
-        minWidth: "275px",
-        padding: "0.25rem",
-        margin: "1rem auto auto auto",
-        // height: "250px", // test
-      }}
-    >
+    <Card sx={styles.container}>
       <CardActionArea component={RouterLink} to={props.to} aria-label="view single post">
         <CardContent>
           <PostAuthor
@@ -47,36 +56,17 @@ const PostExcerpt = (props) => {
           <CardMedia component="img" height="150" image={props.media} alt="visual media" />
         )}
       </CardActionArea>
-      <CardActions
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <CardActions sx={styles.cardActions}>
         <Box>
           <Button onClick={props.onUpvote}>
             {reactionEmoji.thumbsUp}
-            <Typography
-              variant="body1"
-              sx={{
-                color: "#000000",
-                marginLeft: "0.5rem",
-              }}
-            >
+            <Typography variant="body1" sx={styles.reactions}>
               {props.reactions.thumbsUp}
             </Typography>
           </Button>
           <Button onClick={props.onDownvote}>
             {reactionEmoji.thumbsDown}
-            <Typography
-              variant="body1"
-              sx={{
-                color: "#000000",
-                marginLeft: "0.5rem",
-              }}
-            >
+            <Typography variant="body1" sx={styles.reactions}>
               {props.reactions.thumbsDown}
             </Typography>
           </Button>

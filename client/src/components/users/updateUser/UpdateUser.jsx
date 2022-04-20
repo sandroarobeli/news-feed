@@ -119,14 +119,11 @@ const UpdateUser = () => {
 
     try {
       const signedResponse = await fetch("http://127.0.0.1:5000/api/image");
-      // console.log(signedResponse); // test
       const signedData = await signedResponse.json();
-      // console.log(signedData); // test
-      // console.log(file); // test
       const url = "https://api.cloudinary.com/v1_1/" + signedData.cloudName + "/auto/upload";
 
       if (typeIsAllowed) {
-        setIsLoading(true); // test
+        setIsLoading(true);
         formData.append("file", file);
         formData.append("api_key", signedData.apiKey);
         formData.append("timestamp", signedData.timestamp);
@@ -141,16 +138,13 @@ const UpdateUser = () => {
       });
       const imageResponse = await response.json();
       if (!response.ok) {
-        // throw new Error("Attachment failed. Please try again."); // test
-        setErrorMessage(imageResponse.error.message); // RESTORE
+        setErrorMessage(imageResponse.error.message);
       }
-      //console.log(imageResponse); // test
+
       // const avatarUrl = imageResponse.secure_url; // Original secure URL
       const avatarUrl = imageResponse.eager[0].secure_url; // URL with stylings
       setUserAvatar(avatarUrl);
       setIsLoading(false);
-
-      // setSuccessBarOpen(true);
     } catch (error) {
       setErrorMessage(error.message); // Local Error state gets populated by Cloudinary error
       setIsLoading(false);
@@ -162,8 +156,6 @@ const UpdateUser = () => {
 
     try {
       await dispatch(update({ userToken, currentUserName, updatedUserName, userAvatar })).unwrap();
-      //setSnackbarOpen(true); // NOT USED NOW. KEEP IT AS A USEFUL FEATURE FOR FUTURE!!!
-      // FOR EXAMPLE: WHEN POST IS ADDED OR EDITED ETC. GREAT CONFIRMATION FEATURE!
       navigate("/");
     } catch (error) {
       // NOTE: SINCE ERRORS COULD BE GENERATED FROM EITHER CLOUDINARY OR REDUX,
@@ -190,7 +182,6 @@ const UpdateUser = () => {
     dispatch(clearError());
     setErrorMessage("");
     setUpdatedUserName("");
-    //setPassword("");
     setUserAvatar("");
   };
 
