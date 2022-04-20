@@ -7,7 +7,7 @@ require("./db/mongoose");
 
 // Custom modules
 const userRoutes = require("./routes/user-routes");
-//const postRoutes = require('./routes/post-routes')
+const postRoutes = require("./routes/post-routes");
 const cloudinaryRoutes = require("./routes/cloudinary-routes");
 
 // Create the server app and designate the port
@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Register individual custom routers
 app.use("/api/user", userRoutes); // This url triggers userRoutes
-//app.use('/api/post', postRoutes) // This url triggers postRoutes
+app.use("/api/post", postRoutes); // This url triggers postRoutes
 app.use("/api/image", cloudinaryRoutes); // This url triggers signupRoutes
 
 // Handling errors for unsupported routes

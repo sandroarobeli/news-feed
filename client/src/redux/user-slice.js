@@ -208,7 +208,7 @@ const userSlice = createSlice({
       state.status = "idle";
     },
   },
-  extraReducers(builder) {
+  extraReducers: (builder) => {
     builder
       .addCase(signup.pending, (state, action) => {
         state.status = "loading";
@@ -309,6 +309,7 @@ const userSlice = createSlice({
             expiration: state.user.tokenExpiration.toString(),
           })
         );
+        state.status = "idle"; // RESTORE IF NEEDED
       })
       .addCase(update.rejected, (state, action) => {
         state.status = "failed";
@@ -333,6 +334,7 @@ const userSlice = createSlice({
             emailTokenExpiration: action.payload.emailTokenExpiration,
           })
         );
+        state.status = "idle";
       })
       .addCase(passwordResetEmail.rejected, (state, action) => {
         state.status = "failed";
@@ -373,7 +375,7 @@ export const { clearError, logout, autoLogin } = userSlice.actions;
 
 // Exports individual selectors
 export const selectUserName = (state) => state.user.user.userName;
-// export const selectUserId = (state) => state.user.user.userId
+export const selectUserId = (state) => state.user.user.userId;
 export const selectUserAvatar = (state) => state.user.user.userAvatar;
 // export const selectUserPosts = (state) => state.user.user.posts
 export const selectToken = (state) => state.user.user.token;

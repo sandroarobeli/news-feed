@@ -18,7 +18,6 @@ const styles = {
     alignItems: "center",
   },
   avatar: {
-    border: `2px solid ${theme.palette.primary.main}`,
     width: "2.75rem",
     height: "2.75rem",
   },
@@ -28,7 +27,7 @@ const styles = {
   },
   button: {
     color: "#FFFFFF",
-    background: theme.palette.primary.light,
+    background: theme.palette.primary.main,
   },
 };
 
@@ -46,7 +45,7 @@ const CurrentUser = (props) => {
           <IconButton
             disableRipple
             component={RouterLink}
-            to="" // to Create a POST
+            to="/createPost"
             sx={styles.button}
             aria-label="Create a post"
           >
