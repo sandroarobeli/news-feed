@@ -17,6 +17,7 @@ import PasswordResetForm from "./components/users/passwordResetForm/PasswordRese
 import PasswordLinkExpired from "./components/users/passwordLinkExpired/PasswordLinkExpired";
 import NewPost from "./components/posts/newPost/NewPost";
 import SinglePost from "./components/posts/singlePost/SinglePost";
+import EditPost from "./components/posts/editPost/EditPost";
 import { selectToken, selectTokenExpiration, logout, autoLogin } from "./redux/user-slice.js";
 
 const App = () => {
@@ -91,6 +92,7 @@ const App = () => {
       <Routes>
         <Route path="" exact element={<PostsList />} />
         <Route exact path="view/:postId" element={<SinglePost />} />
+        {isLoggedIn && <Route path="edit/:postId" element={<EditPost />} />}
         {isLoggedIn && <Route path="myposts" element={<MyPosts />} />}
         {!isLoggedIn && <Route path="login" element={<Login />} />}
         {!isLoggedIn && <Route path="signup" element={<Signup />} />}

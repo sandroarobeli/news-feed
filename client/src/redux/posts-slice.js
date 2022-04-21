@@ -85,7 +85,7 @@ export const upvotePost = createAsyncThunk(
         return rejectWithValue(responseData.message);
       }
 
-      return responseData.post._id;
+      return responseData.post;
     } catch (error) {
       // NETWORK RELATED ERRORS
       console.log("from create thunk catch"); //test
@@ -117,7 +117,41 @@ export const downvotePost = createAsyncThunk(
         return rejectWithValue(responseData.message);
       }
 
-      return responseData.post._id;
+      return responseData.post;
+    } catch (error) {
+      // NETWORK RELATED ERRORS
+      console.log("from create thunk catch"); //test
+      console.log(error.message); //test
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Edits a Post
+export const editPost = createAsyncThunk(
+  "posts/editPost",
+  async (initialPost, { rejectWithValue }) => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/post/edit", {
+        method: "PATCH",
+        headers: {
+          Authorization: "Bearer " + initialPost.userToken,
+          "Content-Type": "application/json",
+        },
+        mode: "cors",
+        body: JSON.stringify({
+          postId: initialPost.postId,
+          content: initialPost.content,
+        }),
+      });
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        // NON-NETWORK (NON 500 STATUS CODE) RELATED ERRORS
+        return rejectWithValue(responseData.message);
+      }
+
+      return responseData.post;
     } catch (error) {
       // NETWORK RELATED ERRORS
       console.log("from create thunk catch"); //test
@@ -186,14 +220,9 @@ const postsSlice = createSlice({
       })
       .addCase(upvotePost.fulfilled, (state, action) => {
         state.status = "success";
-        const postId = action.payload;
-        console.log("postId received"); // test
-        console.log(action.payload); // test
-        console.log(postId); // test
-        const existingPost = state.posts.find((post) => post._id === postId);
-        if (existingPost) {
-          existingPost.reactions.thumbsUp++;
-        }
+        const { _id } = action.payload;
+        const existingPost = state.posts.find((post) => post._id === _id);
+        ++existingPost.reactions.thumbsUp;
       })
       .addCase(upvotePost.rejected, (state, action) => {
         state.status = "failed";
@@ -204,14 +233,26 @@ const postsSlice = createSlice({
       })
       .addCase(downvotePost.fulfilled, (state, action) => {
         state.status = "success";
-        const postId = action.payload;
-
-        const existingPost = state.posts.find((post) => post._id === postId);
-        if (existingPost) {
-          existingPost.reactions.thumbsDown++;
-        }
+        const { _id } = action.payload;
+        const existingPost = state.posts.find((post) => post._id === _id);
+        ++existingPost.reactions.thumbsDown;
       })
       .addCase(downvotePost.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(editPost.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(editPost.fulfilled, (state, action) => {
+        state.status = "success";
+        console.log("payload from Edit Post"); // test
+        console.log(action.payload); // test
+        const { _id, content } = action.payload;
+        const existingPost = state.posts.find((post) => post._id === _id);
+        existingPost.content = content;
+      })
+      .addCase(editPost.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

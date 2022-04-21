@@ -1,5 +1,6 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import Card from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardActions from "@mui/material/CardActions";
@@ -11,6 +12,7 @@ import Box from "@mui/material/Box";
 
 import PostAuthor from "../postAuthor/PostAuthor";
 import TimeStamp from "../timeStamp/TimeStamp";
+import { selectUserId } from "../../../redux/user-slice.js";
 
 const styles = {
   container: {
@@ -38,9 +40,12 @@ const reactionEmoji = {
 };
 
 const PostExcerpt = (props) => {
+  // From Redux
+  const loggedUserId = useSelector(selectUserId);
+
   return (
     <Card sx={styles.container}>
-      <CardActionArea component={RouterLink} to={props.to} aria-label="view single post">
+      <CardActionArea component={RouterLink} to={props.toView} aria-label="view single post">
         <CardContent>
           <PostAuthor
             author={props.author}
@@ -71,14 +76,16 @@ const PostExcerpt = (props) => {
             </Typography>
           </Button>
         </Box>
-        <Box sx={{ marginRight: "2rem" }}>
-          <Button component={RouterLink} to="#" size="small" color="primary">
-            EDIT
-          </Button>
-          <Button size="small" color="error" onClick={props.onReactionAdded}>
-            DELETE
-          </Button>
-        </Box>
+        {loggedUserId === props.authorId && (
+          <Box sx={{ marginRight: "2rem" }}>
+            <Button component={RouterLink} to={props.toEdit} size="small" color="primary">
+              EDIT
+            </Button>
+            <Button size="small" color="error" onClick={props.onReactionAdded}>
+              DELETE
+            </Button>
+          </Box>
+        )}
       </CardActions>
     </Card>
   );
