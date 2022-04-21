@@ -90,14 +90,16 @@ const PostsList = () => {
     content = <LoadingSpinner />;
   } else {
     content =
-      posts.length === 0 ? (
+      posts.length === 0 ? ( // || posts.length === 0
         <BlankExcerpt />
       ) : (
         posts.map((post) => (
           <PostExcerpt
             key={post._id}
-            to={`view/${post._id}`}
+            toView={`view/${post._id}`}
+            toEdit={`edit/${post._id}`}
             author={post.creator.userName}
+            authorId={post.creator._id}
             authorAvatar={post.creator.userAvatar}
             quantity={post.creator.posts.length}
             timestamp={post.date}

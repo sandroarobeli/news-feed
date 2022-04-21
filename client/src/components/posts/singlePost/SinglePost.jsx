@@ -53,8 +53,10 @@ const SinglePost = () => {
     <>
       <PostExcerpt
         key={postById._id}
-        to={`view/${postById._id}`}
+        toView={`view/${postById._id}`}
+        toEdit={`edit/${postById._id}`}
         author={postById.creator.userName}
+        authorId={postById.creator._id}
         authorAvatar={postById.creator.userAvatar}
         quantity={postById.creator.posts.length}
         timestamp={postById.date}
