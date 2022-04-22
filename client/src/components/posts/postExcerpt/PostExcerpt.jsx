@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Card from "@mui/material/Card";
@@ -12,7 +12,9 @@ import Box from "@mui/material/Box";
 
 import PostAuthor from "../postAuthor/PostAuthor";
 import TimeStamp from "../timeStamp/TimeStamp";
-import { selectUserId } from "../../../redux/user-slice.js";
+import DeleteModal from "../../shared/deleteModal/DeleteModal";
+import { selectUserId, selectToken } from "../../../redux/user-slice.js";
+import { deletePost, upvotePost, downvotePost } from "../../../redux/posts-slice";
 
 const styles = {
   container: {
@@ -41,53 +43,113 @@ const reactionEmoji = {
 
 const PostExcerpt = (props) => {
   // From Redux
+  const dispatch = useDispatch();
   const loggedUserId = useSelector(selectUserId);
+  const userToken = useSelector(selectToken);
+
+  // Local state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  // Handler functions
+  const handleDeleteModalOpen = () => {
+    setDeleteModalOpen(true);
+  };
+  const handleDeleteModalClose = () => {
+    setDeleteModalOpen(false);
+  };
+
+  const handleUpvote = async () => {
+    try {
+      await dispatch(upvotePost({ postId: props.postId })).unwrap();
+    } catch (error) {
+      // For debugging only. error gets populated by createAsyncThunk abstraction
+      console.log("from UPVOTE submit"); //test
+      console.log(error); // test
+    }
+  };
+
+  const handleDownvote = async (postId) => {
+    try {
+      await dispatch(downvotePost({ postId: props.postId })).unwrap();
+    } catch (error) {
+      // For debugging only. error gets populated by createAsyncThunk abstraction
+      console.log("from DOWNVOTE submit"); //test
+      console.log(error); // test
+    }
+  };
+
+  const handleDeletePost = async () => {
+    setDeleteModalOpen(false);
+    try {
+      await dispatch(deletePost({ userToken, postId: props.postId })).unwrap();
+    } catch (error) {
+      console.log("from DELETE POST submit"); //test
+      console.log(error); // test
+    }
+  };
 
   return (
-    <Card sx={styles.container}>
-      <CardActionArea component={RouterLink} to={props.toView} aria-label="view single post">
-        <CardContent>
-          <PostAuthor
-            author={props.author}
-            authorAvatar={props.authorAvatar}
-            quantity={props.quantity}
-          />
-          <TimeStamp timestamp={props.timestamp} />
-          <Typography variant="body1" component="p" color="text">
-            {props.content}
-          </Typography>
-        </CardContent>
-        {props.media && (
-          <CardMedia component="img" height="150" image={props.media} alt="visual media" />
-        )}
-      </CardActionArea>
-      <CardActions sx={styles.cardActions}>
-        <Box>
-          <Button onClick={props.onUpvote}>
-            {reactionEmoji.thumbsUp}
-            <Typography variant="body1" sx={styles.reactions}>
-              {props.reactions.thumbsUp}
+    <>
+      <Card sx={styles.container}>
+        <CardActionArea
+          component={RouterLink}
+          to={`view/${props.postId}`}
+          aria-label="view single post"
+        >
+          <CardContent>
+            <PostAuthor
+              author={props.author}
+              authorAvatar={props.authorAvatar}
+              quantity={props.quantity}
+            />
+            <TimeStamp timestamp={props.timestamp} />
+            <Typography variant="body1" component="p" color="text">
+              {props.content}
             </Typography>
-          </Button>
-          <Button onClick={props.onDownvote}>
-            {reactionEmoji.thumbsDown}
-            <Typography variant="body1" sx={styles.reactions}>
-              {props.reactions.thumbsDown}
-            </Typography>
-          </Button>
-        </Box>
-        {loggedUserId === props.authorId && (
-          <Box sx={{ marginRight: "2rem" }}>
-            <Button component={RouterLink} to={props.toEdit} size="small" color="primary">
-              EDIT
+          </CardContent>
+          {props.media && (
+            <CardMedia component="img" height="150" image={props.media} alt="visual media" />
+          )}
+        </CardActionArea>
+        <CardActions sx={styles.cardActions}>
+          <Box>
+            <Button onClick={handleUpvote}>
+              {reactionEmoji.thumbsUp}
+              <Typography variant="body1" sx={styles.reactions}>
+                {props.reactions.thumbsUp}
+              </Typography>
             </Button>
-            <Button size="small" color="error" onClick={props.onReactionAdded}>
-              DELETE
+            <Button onClick={handleDownvote}>
+              {reactionEmoji.thumbsDown}
+              <Typography variant="body1" sx={styles.reactions}>
+                {props.reactions.thumbsDown}
+              </Typography>
             </Button>
           </Box>
-        )}
-      </CardActions>
-    </Card>
+          {loggedUserId === props.authorId && (
+            <Box sx={{ marginRight: "2rem" }}>
+              <Button
+                component={RouterLink}
+                to={`edit/${props.postId}`}
+                size="small"
+                color="primary"
+              >
+                EDIT
+              </Button>
+              <Button size="small" color="error" onClick={handleDeleteModalOpen}>
+                DELETE
+              </Button>
+            </Box>
+          )}
+        </CardActions>
+      </Card>
+      <DeleteModal
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        cancelDelete={handleDeleteModalClose}
+        confirmDelete={handleDeletePost}
+      />
+    </>
   );
 };
 

@@ -161,6 +161,39 @@ export const editPost = createAsyncThunk(
   }
 );
 
+// Deletes a Post
+export const deletePost = createAsyncThunk(
+  "posts/deletePost",
+  async (initialPost, { rejectWithValue }) => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/post/delete", {
+        method: "DELETE",
+        headers: {
+          Authorization: "Bearer " + initialPost.userToken,
+          "Content-Type": "application/json",
+        },
+        mode: "cors",
+        body: JSON.stringify({
+          postId: initialPost.postId,
+        }),
+      });
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        // NON-NETWORK (NON 500 STATUS CODE) RELATED ERRORS
+        return rejectWithValue(responseData.message);
+      }
+
+      return responseData.post;
+    } catch (error) {
+      // NETWORK RELATED ERRORS
+      console.log("from create thunk catch"); //test
+      console.log(error.message); //test
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const postsSlice = createSlice({
   name: "posts",
   initialState: {
@@ -253,6 +286,20 @@ const postsSlice = createSlice({
         existingPost.content = content;
       })
       .addCase(editPost.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(deletePost.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        state.status = "success";
+        console.log("payload from Edit Post"); // test
+        console.log(action.payload); // test
+        const { _id } = action.payload;
+        state.posts = state.posts.filter((post) => post._id !== _id);
+      })
+      .addCase(deletePost.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

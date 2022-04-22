@@ -6,6 +6,7 @@ const create = require("../controllers/post-controllers/create");
 const upvote = require("../controllers/post-controllers/upvote");
 const downvote = require("../controllers/post-controllers/downvote");
 const edit = require("../controllers/post-controllers/edit");
+const deletePost = require("../controllers/post-controllers/delete");
 const checkAuthorization = require("../modules/check-authorization");
 
 // Initializing the router object
@@ -25,6 +26,9 @@ router.patch("/downvote", downvote);
 
 // Update Post content
 router.patch("/edit", checkAuthorization, [check("content").not().isEmpty().trim()], edit);
+
+// Delete a Post
+router.delete("/delete", checkAuthorization, deletePost);
 
 // More to be added
 
