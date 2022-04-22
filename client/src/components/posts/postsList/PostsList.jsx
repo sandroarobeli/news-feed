@@ -7,14 +7,14 @@ import ErrorModal from "../../shared/errorModal/ErrorModal";
 import LoadingSpinner from "../../shared/loadingSpinner/LoadingSpinner";
 import BlankExcerpt from "../blankExcerpt/BlankExcerpt";
 import PostExcerpt from "../postExcerpt/PostExcerpt";
+
 import { selectToken, selectUserName, selectUserAvatar } from "../../../redux/user-slice";
 import {
   selectAllPosts,
   clearPostError,
   selectPostStatus,
+  selectPostError,
   listAllPosts,
-  upvotePost,
-  downvotePost,
 } from "../../../redux/posts-slice";
 
 const styles = {
@@ -32,13 +32,13 @@ const PostsList = () => {
   const userAvatar = useSelector(selectUserAvatar);
   const posts = useSelector(selectAllPosts);
   const postStatus = useSelector(selectPostStatus);
+  const postError = useSelector(selectPostError);
 
   console.log("posts"); // test
   console.log(posts); // test
 
   // Local State
   const [settingsDrawerOpen, setSettingsOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
   // Convenience Boolean for logged in status
   let isLoggedIn = userToken ? true : false;
@@ -58,31 +58,8 @@ const PostsList = () => {
     setSettingsOpen(false);
   };
 
-  const handleUpvote = async (postId) => {
-    try {
-      await dispatch(upvotePost({ postId })).unwrap();
-    } catch (error) {
-      // For debugging only. error gets populated by createAsyncThunk abstraction
-      console.log("from UPVOTE submit"); //test
-      console.log(error); // test
-      setErrorMessage(error); // Local Error state get populated by Redux error
-    }
-  };
-
-  const handleDownvote = async (postId) => {
-    try {
-      await dispatch(downvotePost({ postId })).unwrap();
-    } catch (error) {
-      // For debugging only. error gets populated by createAsyncThunk abstraction
-      console.log("from DOWNVOTE submit"); //test
-      console.log(error); // test
-      setErrorMessage(error); // Local Error state get populated by Redux error
-    }
-  };
-
   const handleErrorClear = () => {
     dispatch(clearPostError());
-    setErrorMessage("");
   };
 
   let content;
@@ -90,24 +67,21 @@ const PostsList = () => {
     content = <LoadingSpinner />;
   } else {
     content =
-      posts.length === 0 ? ( // || posts.length === 0
+      posts.length === 0 ? (
         <BlankExcerpt />
       ) : (
         posts.map((post) => (
           <PostExcerpt
             key={post._id}
-            toView={`view/${post._id}`}
-            toEdit={`edit/${post._id}`}
+            postId={post._id}
             author={post.creator.userName}
             authorId={post.creator._id}
             authorAvatar={post.creator.userAvatar}
             quantity={post.creator.posts.length}
             timestamp={post.date}
-            content={`${post.content.substring(0, 100)} ${post.content.length > 100 ? "..." : " "}`} // + post.content.length > 100 && "..."
+            content={`${post.content.substring(0, 100)} ${post.content.length > 100 ? "..." : " "}`}
             media={post.media}
             reactions={post.reactions}
-            onUpvote={() => handleUpvote(post._id)}
-            onDownvote={() => handleDownvote(post._id)}
           />
         ))
       );
@@ -126,10 +100,10 @@ const PostsList = () => {
       )}
       {content}
       <ErrorModal
-        open={!!errorMessage}
+        open={!!postError}
         onClose={handleErrorClear}
         clearModal={handleErrorClear}
-        errorMessage={errorMessage}
+        errorMessage={postError}
       />
     </Box>
   );
