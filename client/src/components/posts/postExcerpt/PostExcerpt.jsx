@@ -93,7 +93,7 @@ const PostExcerpt = (props) => {
       <Card sx={styles.container}>
         <CardActionArea
           component={RouterLink}
-          to={`view/${props.postId}`}
+          to={`../view/${props.postId}`}
           aria-label="view single post"
         >
           <CardContent>
@@ -130,7 +130,7 @@ const PostExcerpt = (props) => {
             <Box sx={{ marginRight: "2rem" }}>
               <Button
                 component={RouterLink}
-                to={`edit/${props.postId}`}
+                to={`../edit/${props.postId}`}
                 size="small"
                 color="primary"
               >

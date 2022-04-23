@@ -25,13 +25,11 @@ const PostAuthor = (props) => {
   return (
     <Box sx={styles.container}>
       <Avatar alt={props.author} src={props.authorAvatar} sx={styles.avatar} />
-      <Typography variant="body2" sx={styles.author}>
-        {"by "} {props.author ? props.author : "Unknown Author"}{" "}
-        {
-          <Typography component={RouterLink} variant="body2" to="#">
-            {`${props.quantity} ${props.quantity === 1 ? "post" : "posts"}`}
-          </Typography>
-        }
+      <Typography variant="body2" component="p" sx={styles.author}>
+        {"by "} {props.author ? props.author : "Unknown Author"} {""}
+        <Typography variant="body2" component="span" sx={{ fontWeight: 600 }}>
+          {`${props.quantity} ${props.quantity === 1 ? "post" : "posts"}`}
+        </Typography>
       </Typography>
     </Box>
   );
