@@ -377,7 +377,6 @@ export const { clearError, logout, autoLogin } = userSlice.actions;
 export const selectUserName = (state) => state.user.user.userName;
 export const selectUserId = (state) => state.user.user.userId;
 export const selectUserAvatar = (state) => state.user.user.userAvatar;
-// export const selectUserPosts = (state) => state.user.user.posts
 export const selectToken = (state) => state.user.user.token;
 export const selectTokenExpiration = (state) => state.user.user.tokenExpiration;
 export const selectUserStatus = (state) => state.user.status;

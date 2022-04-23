@@ -316,5 +316,10 @@ export const selectPostById = (state, postId) =>
   state.posts.posts.find((post) => post._id === postId);
 export const selectPostError = (state) => state.posts.error;
 export const selectPostStatus = (state) => state.posts.status;
+export const selectMyPosts = (state, userId) =>
+  state.posts.posts
+    .filter((post) => post.creator._id === userId)
+    .slice()
+    .sort((a, b) => b.date.localeCompare(a.date));
 
 export default postsSlice.reducer;
