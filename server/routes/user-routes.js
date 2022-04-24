@@ -5,6 +5,7 @@ const signup = require("../controllers/user-controllers/signup");
 const login = require("../controllers/user-controllers/login");
 const update = require("../controllers/user-controllers/update");
 const email = require("../controllers/user-controllers/email");
+const deleteUser = require("../controllers/user-controllers/delete");
 const passwordResetLinkValidate = require("../controllers/user-controllers/password-reset-link-validate");
 const passwordReset = require("../controllers/user-controllers/password-reset");
 const checkAuthorization = require("../modules/check-authorization");
@@ -50,6 +51,7 @@ router.patch(
   passwordReset
 );
 
-// Delete User
+// Delete a User
+router.delete("/delete", checkAuthorization, deleteUser);
 
 module.exports = router;

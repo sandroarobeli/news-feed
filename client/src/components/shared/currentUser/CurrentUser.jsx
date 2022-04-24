@@ -63,7 +63,11 @@ const CurrentUser = (props) => {
             <SettingsIcon />
           </IconButton>
         </Stack>
-        <SettingsDrawer open={props.open} onClose={props.onClose} />
+        <SettingsDrawer
+          open={props.open}
+          onClose={props.onClose}
+          onDeleteUser={props.onDeleteUser}
+        />
       </Toolbar>
     </AppBar>
   );

@@ -1,5 +1,6 @@
-// Third party modules
 const mongoose = require("mongoose");
+
+const Post = require("./post-model");
 
 // Define User Schema
 const userSchema = new mongoose.Schema({

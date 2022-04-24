@@ -89,11 +89,15 @@ const NewPost = () => {
   const handleContentChange = (event) => {
     setContent(event.target.value);
   };
-
+  // IMPORTANT FOR FUTURE REFERENCE!!!
+  // MAKE TWO SEPARATE MODULES: ONE FOR AVATAR WITH 'EAGER' SET FOR
+  // SMALLER FORMATS, ANOTHER FOR MEDIA LOADER BELOW SET FOR
+  // LARGER FORMATS THAT CAN EITHER PLAY VIDEO OR DISPLAY A WIDE
+  // ANGLE PICTURE
   const handleMediaUpload = async (event) => {
     const file = event.target.files[0];
     const formData = new FormData();
-
+    console.log(file); // test
     // Depending on video/mp4 VS image/jpeg, sets iframe VS img for CardMedia!
     if (file.type.includes("video")) {
       setMediaFormat("iframe");
