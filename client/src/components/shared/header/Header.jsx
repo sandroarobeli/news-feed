@@ -102,7 +102,7 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static" color="primary" sx={styles.appbar}>
+    <AppBar position="sticky" color="primary" sx={styles.appbar}>
       <Toolbar sx={styles.toolbar}>
         <Stack direction="row" sx={styles.leftStack}>
           <IconButton

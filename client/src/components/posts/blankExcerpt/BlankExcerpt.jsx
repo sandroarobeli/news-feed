@@ -13,11 +13,11 @@ const styles = {
   },
 };
 
-const BlankExcerpt = () => {
+const BlankExcerpt = (props) => {
   return (
-    <Card sx={styles.container}>
+    <Card sx={styles.container} elevation={0}>
       <CardContent>
-        <Typography variant="h3" component="h3" color="text"></Typography>
+        <Typography variant="h3" component="h3" color="text" sx={props.sx}></Typography>
       </CardContent>
     </Card>
   );

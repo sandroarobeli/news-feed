@@ -6,6 +6,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 import theme from "./theme/theme";
 import Header from "./components/shared/header/Header";
+import Footer from "./components/shared/footer/Footer";
 import PostsList from "./components/posts/postsList/PostsList";
 import MyPosts from "./components/posts/myPosts/MyPosts";
 import Login from "./components/users/login/Login";
@@ -106,6 +107,7 @@ const App = () => {
         />
         <Route path="*" element={<Navigate replace to="" />} />
       </Routes>
+      <Footer />
     </ThemeProvider>
   );
 };

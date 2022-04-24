@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import Pagination from "@mui/material/Pagination";
 import Box from "@mui/material/Box";
 
 import CurrentUser from "../../shared/currentUser/CurrentUser";
@@ -19,8 +20,12 @@ import {
 
 const styles = {
   container: {
-    border: "1px solid red",
-    margin: "0 auto 2rem auto",
+    margin: "0 auto 0 auto",
+  },
+  pagination: {
+    display: "flex",
+    justifyContent: "center",
+    margin: "2rem auto 5rem auto",
   },
 };
 
@@ -39,6 +44,7 @@ const PostsList = () => {
 
   // Local State
   const [settingsDrawerOpen, setSettingsOpen] = useState(false);
+  const [page, setPage] = useState(1);
 
   // Convenience Boolean for logged in status
   let isLoggedIn = userToken ? true : false;
@@ -51,6 +57,9 @@ const PostsList = () => {
   }, [dispatch, postStatus]);
 
   // Handling functions
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
   const handleSettingsDrawerOpen = () => {
     setSettingsOpen(true);
   };
@@ -62,6 +71,9 @@ const PostsList = () => {
     dispatch(clearPostError());
   };
 
+  // Calculate number of empty rows
+  const emptyRows = 5 - Math.min(5, posts.length - (page - 1) * 5);
+
   let content;
   if (postStatus === "loading") {
     content = <LoadingSpinner />;
@@ -70,20 +82,24 @@ const PostsList = () => {
       posts.length === 0 ? (
         <BlankExcerpt />
       ) : (
-        posts.map((post) => (
-          <PostExcerpt
-            key={post._id}
-            postId={post._id}
-            author={post.creator.userName}
-            authorId={post.creator._id}
-            authorAvatar={post.creator.userAvatar}
-            quantity={post.creator.posts.length}
-            timestamp={post.date}
-            content={`${post.content.substring(0, 100)} ${post.content.length > 100 ? "..." : " "}`}
-            media={post.media}
-            reactions={post.reactions}
-          />
-        ))
+        posts
+          .slice((page - 1) * 5, (page - 1) * 5 + 5)
+          .map((post) => (
+            <PostExcerpt
+              key={post._id}
+              postId={post._id}
+              author={post.creator.userName}
+              authorId={post.creator._id}
+              authorAvatar={post.creator.userAvatar}
+              quantity={post.creator.posts.length}
+              timestamp={post.date}
+              content={`${post.content.substring(0, 100)} ${
+                post.content.length > 100 ? "..." : " "
+              }`}
+              media={post.media}
+              reactions={post.reactions}
+            />
+          ))
       );
   }
 
@@ -99,6 +115,15 @@ const PostsList = () => {
         />
       )}
       {content}
+      {emptyRows > 0 && <BlankExcerpt sx={{ height: `calc(100vh - 100vh/${emptyRows})` }} />}
+      <Pagination
+        variant="outlined"
+        color="primary"
+        count={Math.ceil(posts.length / 5)}
+        page={page}
+        onChange={handlePageChange}
+        sx={styles.pagination}
+      />
       <ErrorModal
         open={!!postError}
         onClose={handleErrorClear}
