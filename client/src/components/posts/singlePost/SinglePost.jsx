@@ -117,7 +117,6 @@ const SinglePost = () => {
             <PostAuthor
               author={postById.creator.userName}
               authorAvatar={postById.creator.userAvatar}
-              quantity={postById.creator.posts.length}
             />
             <TimeStamp timestamp={postById.date} />
             <Typography variant="body1" component="p" color="text">

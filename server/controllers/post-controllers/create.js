@@ -60,6 +60,7 @@ const create = async (req, res, next) => {
     await existingUser.save({ session: session });
     await session.commitTransaction();
     // End Transaction
+
     res.status(201).json({ post: createdPost });
   } catch (error) {
     return next(new Error(`Creating Post failed: ${error.message}`));
