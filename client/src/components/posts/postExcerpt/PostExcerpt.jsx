@@ -97,11 +97,7 @@ const PostExcerpt = (props) => {
           aria-label="view single post"
         >
           <CardContent>
-            <PostAuthor
-              author={props.author}
-              authorAvatar={props.authorAvatar}
-              quantity={props.quantity}
-            />
+            <PostAuthor author={props.author} authorAvatar={props.authorAvatar} />
             <TimeStamp timestamp={props.timestamp} />
             <Typography variant="body1" component="p" color="text">
               {props.content}
