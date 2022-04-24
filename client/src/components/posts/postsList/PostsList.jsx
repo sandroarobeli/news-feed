@@ -8,8 +8,16 @@ import ErrorModal from "../../shared/errorModal/ErrorModal";
 import LoadingSpinner from "../../shared/loadingSpinner/LoadingSpinner";
 import BlankExcerpt from "../blankExcerpt/BlankExcerpt";
 import PostExcerpt from "../postExcerpt/PostExcerpt";
+import DeleteModal from "../../shared/deleteModal/DeleteModal";
 
-import { selectToken, selectUserName, selectUserAvatar } from "../../../redux/user-slice";
+import {
+  selectToken,
+  selectUserName,
+  selectUserAvatar,
+  selectUserId,
+  deleteUser,
+  logout,
+} from "../../../redux/user-slice";
 import {
   selectAllPosts,
   clearPostError,
@@ -33,6 +41,7 @@ const PostsList = () => {
   // From Redux
   const dispatch = useDispatch();
   const userToken = useSelector(selectToken);
+  const userId = useSelector(selectUserId);
   const userName = useSelector(selectUserName);
   const userAvatar = useSelector(selectUserAvatar);
   const posts = useSelector(selectAllPosts);
@@ -41,10 +50,13 @@ const PostsList = () => {
 
   console.log("posts"); // test
   console.log(posts); // test
+  console.log("userId"); // test
+  console.log(userId); // test
 
   // Local State
   const [settingsDrawerOpen, setSettingsOpen] = useState(false);
   const [page, setPage] = useState(1);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // Convenience Boolean for logged in status
   let isLoggedIn = userToken ? true : false;
@@ -54,17 +66,40 @@ const PostsList = () => {
     if (postStatus === "idle") {
       dispatch(listAllPosts());
     }
-  }, [dispatch, postStatus]);
+  }, [dispatch, postStatus, posts]);
 
   // Handling functions
+  const handleDeleteModalOpen = () => {
+    setSettingsOpen(false);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteModalClose = () => {
+    setDeleteModalOpen(false);
+  };
+
   const handlePageChange = (event, value) => {
     setPage(value);
   };
+
   const handleSettingsDrawerOpen = () => {
     setSettingsOpen(true);
   };
+
   const handleSettingsDrawerClose = () => {
     setSettingsOpen(false);
+  };
+
+  const handleDeleteUser = async () => {
+    setDeleteModalOpen(false);
+    try {
+      await dispatch(deleteUser({ userToken, userId })).unwrap();
+      dispatch(logout());
+      dispatch(clearPostError()); // Forces STATUS to 'idle', thus refreshes array
+    } catch (error) {
+      console.log("from DELETE USER submit"); //test
+      console.log(error); // test
+    }
   };
 
   const handleErrorClear = () => {
@@ -112,6 +147,7 @@ const PostsList = () => {
           onClick={handleSettingsDrawerOpen}
           open={settingsDrawerOpen}
           onClose={handleSettingsDrawerClose}
+          onDeleteUser={handleDeleteModalOpen}
         />
       )}
       {content}
@@ -129,6 +165,12 @@ const PostsList = () => {
         onClose={handleErrorClear}
         clearModal={handleErrorClear}
         errorMessage={postError}
+      />
+      <DeleteModal
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        cancelDelete={handleDeleteModalClose}
+        confirmDelete={handleDeleteUser}
       />
     </Box>
   );

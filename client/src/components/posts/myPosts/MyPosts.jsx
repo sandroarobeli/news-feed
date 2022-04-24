@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Pagination from "@mui/material/Pagination";
 import Box from "@mui/material/Box";
 
@@ -7,13 +7,22 @@ import CurrentUser from "../../shared/currentUser/CurrentUser";
 import LoadingSpinner from "../../shared/loadingSpinner/LoadingSpinner";
 import BlankExcerpt from "../blankExcerpt/BlankExcerpt";
 import PostExcerpt from "../postExcerpt/PostExcerpt";
+import ErrorModal from "../../shared/errorModal/ErrorModal";
+import DeleteModal from "../../shared/deleteModal/DeleteModal";
 import {
   selectToken,
   selectUserId,
   selectUserName,
   selectUserAvatar,
+  logout,
+  deleteUser,
 } from "../../../redux/user-slice.js";
-import { selectMyPosts, selectPostStatus } from "../../../redux/posts-slice";
+import {
+  selectMyPosts,
+  selectPostStatus,
+  selectPostError,
+  clearPostError,
+} from "../../../redux/posts-slice";
 
 const styles = {
   container: {
@@ -28,11 +37,13 @@ const styles = {
 
 const MyPosts = () => {
   // From Redux
+  const dispatch = useDispatch();
   const userToken = useSelector(selectToken);
   const userId = useSelector(selectUserId);
   const userName = useSelector(selectUserName);
   const userAvatar = useSelector(selectUserAvatar);
   const postStatus = useSelector(selectPostStatus);
+  const postError = useSelector(selectPostError);
   const myPosts = useSelector((state) => selectMyPosts(state, userId));
 
   console.log("My Posts"); // test
@@ -41,11 +52,21 @@ const MyPosts = () => {
   // Local State
   const [settingsDrawerOpen, setSettingsOpen] = useState(false);
   const [page, setPage] = useState(1);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // Convenience Boolean for logged in status
   let isLoggedIn = userToken ? true : false;
 
   // Handling functions
+  const handleDeleteModalOpen = () => {
+    setSettingsOpen(false);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteModalClose = () => {
+    setDeleteModalOpen(false);
+  };
+
   const handlePageChange = (event, value) => {
     setPage(value);
   };
@@ -55,6 +76,21 @@ const MyPosts = () => {
   };
   const handleSettingsDrawerClose = () => {
     setSettingsOpen(false);
+  };
+
+  const handleDeleteUser = async () => {
+    setDeleteModalOpen(false);
+    try {
+      await dispatch(deleteUser({ userToken, userId })).unwrap();
+      dispatch(logout());
+      dispatch(clearPostError()); // Forces STATUS to 'idle', thus refreshes array
+    } catch (error) {
+      console.log("from DELETE USER submit"); //test
+      console.log(error); // test
+    }
+  };
+  const handleErrorClear = () => {
+    dispatch(clearPostError());
   };
 
   // Calculate number of empty rows
@@ -97,6 +133,7 @@ const MyPosts = () => {
           onClick={handleSettingsDrawerOpen}
           open={settingsDrawerOpen}
           onClose={handleSettingsDrawerClose}
+          onDeleteUser={handleDeleteModalOpen}
         />
       )}
       {content}
@@ -108,6 +145,18 @@ const MyPosts = () => {
         page={page}
         onChange={handlePageChange}
         sx={styles.pagination}
+      />
+      <ErrorModal
+        open={!!postError}
+        onClose={handleErrorClear}
+        clearModal={handleErrorClear}
+        errorMessage={postError}
+      />
+      <DeleteModal
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        cancelDelete={handleDeleteModalClose}
+        confirmDelete={handleDeleteUser}
       />
     </Box>
   );

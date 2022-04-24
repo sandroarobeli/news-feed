@@ -75,9 +75,7 @@ const SettingsDrawer = (props) => {
         <Button
           disableRipple
           aria-label="Delete user"
-          component={RouterLink}
-          to="" // To delete user route
-          onClick={props.onClose}
+          onClick={props.onDeleteUser}
           sx={styles.deleteButton}
         >
           DELETE USER

@@ -166,6 +166,39 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+export const deleteUser = createAsyncThunk(
+  "user/deleteUser",
+  // rejectWithValue ENABLES CUSTOM ERROR MESSAGING
+  async (initialUser, { rejectWithValue }) => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/user/delete", {
+        method: "DELETE",
+        headers: {
+          Authorization: "Bearer " + initialUser.userToken,
+          "Content-Type": "application/json",
+        },
+        mode: "cors",
+        body: JSON.stringify({
+          userId: initialUser.userId,
+        }),
+      });
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        // NON-NETWORK (NON 500 STATUS CODE) RELATED ERRORS
+        return rejectWithValue(responseData.message);
+      }
+
+      return responseData.user;
+    } catch (error) {
+      // NETWORK RELATED ERRORS
+      console.log("from update thunk catch"); //test
+      console.log(error.message); //test
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -365,12 +398,25 @@ const userSlice = createSlice({
         console.log(action.error.message); // test ALLOWS PRE SET STANDARD MESSAGING
         state.error = action.payload; // CUSTOM
         //state.error = action.error.message// STANDARD-PRESET
+      })
+      .addCase(deleteUser.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        console.log("action.payload"); //test
+        console.log(action.payload); //test
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.status = "failed";
+        console.log("action.payload"); //test
+        console.log(action.payload); //test  ALLOWS CUSTOM MESSAGING
+        state.error = action.payload; // CUSTOM
       });
   },
 });
 
 // Exports reducer functions
-// export const {autoLogin, logout, clearError } = userSlice.actions
 export const { clearError, logout, autoLogin } = userSlice.actions;
 
 // Exports individual selectors

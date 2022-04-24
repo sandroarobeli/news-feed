@@ -236,7 +236,8 @@ const postsSlice = createSlice({
         state.status = "succeeded"; // RESTORE IF NEEDED
         //state.status = "idle"; // test
         // console.log(action.payload); // test
-        state.posts = state.posts.concat(action.payload);
+        //state.posts = state.posts.concat(action.payload); // RESTORE
+        state.posts = action.payload; // THIS WORKS WITH REAL API CALLS
         //state.status = "idle"; // ENABLING THIS CAUSES INFINITE LOOP.
       })
       .addCase(listAllPosts.rejected, (state, action) => {
