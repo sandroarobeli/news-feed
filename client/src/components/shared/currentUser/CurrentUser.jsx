@@ -13,6 +13,9 @@ import theme from "../../../theme/theme";
 import SettingsDrawer from "../settingsDrawer/SettingsDrawer";
 
 const styles = {
+  appbar: {
+    marginBottom: "2rem",
+  },
   toolbar: {
     justifyContent: "space-between",
     alignItems: "center",
@@ -33,7 +36,7 @@ const styles = {
 
 const CurrentUser = (props) => {
   return (
-    <AppBar position="static" color="inherit">
+    <AppBar position="static" color="inherit" sx={styles.appbar}>
       <Toolbar sx={styles.toolbar}>
         <Stack direction="row" spacing={2}>
           <Avatar alt={props.userName} src={props.userAvatar} sx={styles.avatar} />

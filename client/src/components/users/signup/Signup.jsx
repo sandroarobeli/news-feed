@@ -17,7 +17,7 @@ export const styles = {
   container: {
     textAlign: "center",
     flexGrow: 1,
-    margin: "1rem auto auto auto",
+    margin: "auto auto 1rem auto",
     borderRadius: "5px",
     maxWidth: {
       mobile: "90%",
