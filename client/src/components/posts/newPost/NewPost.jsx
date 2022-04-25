@@ -85,15 +85,16 @@ const NewPost = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  console.log("MEDIA"); // test
+  console.log(media); // test
+  console.log("MEDIA-FORMAT"); // test
+  console.log(mediaFormat); // test
+
   // Handler functions
   const handleContentChange = (event) => {
     setContent(event.target.value);
   };
-  // IMPORTANT FOR FUTURE REFERENCE!!!
-  // MAKE TWO SEPARATE MODULES: ONE FOR AVATAR WITH 'EAGER' SET FOR
-  // SMALLER FORMATS, ANOTHER FOR MEDIA LOADER BELOW SET FOR
-  // LARGER FORMATS THAT CAN EITHER PLAY VIDEO OR DISPLAY A WIDE
-  // ANGLE PICTURE
+
   const handleMediaUpload = async (event) => {
     const file = event.target.files[0];
     const formData = new FormData();
@@ -108,10 +109,10 @@ const NewPost = () => {
     const sizeIsAllowed = file.size < 5000000;
 
     try {
-      const signedResponse = await fetch("http://127.0.0.1:5000/api/image");
+      const signedResponse = await fetch("http://127.0.0.1:5000/api/file/multimedia");
       const signedData = await signedResponse.json();
       const url = "https://api.cloudinary.com/v1_1/" + signedData.cloudName + "/auto/upload";
-      // TENTATIVELY: LOOKS LIKE ALL THE FORMATS, EAGERS ETC GO HERE AND ARE REPEATED AT FORMDATA!!!
+      // TENTATIVELY: LOOKS LIKE ALL THE FORMATS, EAGERS ETC GO HERE AND ARE REPEATED IN MODULE!!!
       if (sizeIsAllowed) {
         setIsLoading(true); // test
         formData.append("file", file);
@@ -119,10 +120,10 @@ const NewPost = () => {
         formData.append("timestamp", signedData.timestamp);
         formData.append("signature", signedData.signature);
         formData.append("eager", "b_auto,c_fill_pad,g_auto,h_150,w_600");
-        //  formData.append("eager", "b_auto,c_pad,h_150,w_600");
+        //formData.append("eager", "c_fill_pad,g_auto,h_150,w_600");
         formData.append("folder", "news-feed");
       }
-      // b_auto,c_fill_pad,g_auto,h_150,w_600 // RESTORE IF NEEDED
+
       const response = await fetch(url, {
         method: "POST",
         body: formData,
@@ -131,8 +132,11 @@ const NewPost = () => {
       if (!response.ok) {
         setErrorMessage(imageResponse.error.message);
       }
+      console.log("image response"); // test
+      console.log(imageResponse); // test
 
-      const mediaUrl = imageResponse.eager[0].secure_url; // URL with stylings
+      const mediaUrl = imageResponse.secure_url; // test
+      //const mediaUrl = imageResponse.eager[0].secure_url; // URL with stylings
       setMedia(mediaUrl);
       setIsLoading(false);
     } catch (error) {

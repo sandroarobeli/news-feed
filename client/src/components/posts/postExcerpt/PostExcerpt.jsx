@@ -87,7 +87,10 @@ const PostExcerpt = (props) => {
       console.log(error); // test
     }
   };
-
+  // Depending on what media format gets uploaded, image type or video type,
+  // CardMedia component attribute gets adjusted accordingly.
+  // Much like NewPost functionality.
+  const mediaFormat = props.media.slice(props.media.length - 3);
   return (
     <>
       <Card sx={styles.container}>
@@ -104,7 +107,19 @@ const PostExcerpt = (props) => {
             </Typography>
           </CardContent>
           {props.media && (
-            <CardMedia component="img" height="150" image={props.media} alt="visual media" />
+            <CardMedia
+              component={
+                mediaFormat === "png" ||
+                mediaFormat === "jpeg" ||
+                mediaFormat === "jpg" ||
+                mediaFormat === "gif"
+                  ? "img"
+                  : "iframe"
+              }
+              height="150"
+              image={props.media}
+              alt="visual media"
+            />
           )}
         </CardActionArea>
         <CardActions sx={styles.cardActions}>
