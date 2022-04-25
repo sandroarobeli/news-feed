@@ -106,6 +106,11 @@ const SinglePost = () => {
     dispatch(clearPostError());
   };
 
+  // Depending on what media format gets uploaded, image type or video type,
+  // CardMedia component attribute gets adjusted accordingly.
+  // Much like NewPost functionality.
+  const mediaFormat = postById.media.slice(postById.media.length - 3);
+
   if (!postById) {
     return <BlankExcerpt />;
   }
@@ -124,7 +129,19 @@ const SinglePost = () => {
             </Typography>
           </CardContent>
           {postById.media && (
-            <CardMedia component="img" height="150" image={postById.media} alt="visual media" />
+            <CardMedia
+              component={
+                mediaFormat === "png" ||
+                mediaFormat === "jpeg" ||
+                mediaFormat === "jpg" ||
+                mediaFormat === "gif"
+                  ? "img"
+                  : "iframe"
+              }
+              height="150"
+              image={postById.media}
+              alt="visual media"
+            />
           )}
         </CardActionArea>
         <CardActions sx={styles.cardActions}>

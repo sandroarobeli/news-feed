@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 // Register individual custom routers
 app.use("/api/user", userRoutes); // This url triggers userRoutes
 app.use("/api/post", postRoutes); // This url triggers postRoutes
-app.use("/api/image", cloudinaryRoutes); // This url triggers signupRoutes
+app.use("/api/file", cloudinaryRoutes); // This url triggers signupRoutes
 
 // Handling errors for unsupported routes
 app.use((req, res, next) => {

@@ -1,12 +1,12 @@
 const cloudinary = require("cloudinary").v2;
 
-require("../config");
-const fileUploadForm = require("../modules/cloudinary-modules");
+require("../../config");
+const multimediaUploadForm = require("../../modules/multimedia-module");
 const cloudName = cloudinary.config().cloud_name;
 const apiKey = cloudinary.config().api_key;
 
-const getSignature = (req, res, next) => {
-  const signature = fileUploadForm();
+const getMultimediaSignature = (req, res, next) => {
+  const signature = multimediaUploadForm();
   res.json({
     signature: signature.signature,
     timestamp: signature.timestamp,
@@ -15,4 +15,4 @@ const getSignature = (req, res, next) => {
   });
 };
 
-module.exports = getSignature;
+module.exports = getMultimediaSignature;

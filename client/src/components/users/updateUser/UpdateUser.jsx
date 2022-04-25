@@ -118,7 +118,7 @@ const UpdateUser = () => {
       file.type === "image/gif";
 
     try {
-      const signedResponse = await fetch("http://127.0.0.1:5000/api/image");
+      const signedResponse = await fetch("http://127.0.0.1:5000/api/file/avatar");
       const signedData = await signedResponse.json();
       const url = "https://api.cloudinary.com/v1_1/" + signedData.cloudName + "/auto/upload";
 
@@ -128,8 +128,9 @@ const UpdateUser = () => {
         formData.append("api_key", signedData.apiKey);
         formData.append("timestamp", signedData.timestamp);
         formData.append("signature", signedData.signature);
-        formData.append("eager", "b_auto,c_fill_pad,g_auto,h_150,w_600");
+        //formData.append("eager", "b_auto,c_fill_pad,g_auto,h_150,w_600");
         //formData.append("eager", "c_fill,w_150,h_150");
+        formData.append("eager", "b_auto,c_pad,h_150,w_150");
         formData.append("folder", "news-feed");
       }
       const response = await fetch(url, {
